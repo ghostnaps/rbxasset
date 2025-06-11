@@ -1,41 +1,23 @@
 local fs = require("@lune/fs")
 local serde = require("@lune/serde")
 
-local assertArray = require("./validation/assertArray")
-local assertPublicFieldType = require("./validation/assertPublicFieldType")
-local assertValueType = require("./validation/assertValueType")
-local constants = require("./constants")
-local types = require("./types")
+local constants = require("@root/constants")
+local types = require("@root/types")
 
 type AssetConfig = types.AssetConfig
 
 local function readAssetConfig(packagePath: string): AssetConfig
+	local assetConfigPath = `{packagePath}/{constants.ASSET_CONFIG_FILENAME}`
 	local content: string
 	local success, err = pcall(function()
-		content = fs.readFile(`{packagePath}/{constants.ASSET_CONFIG_FILENAME}`)
+		content = fs.readFile(assetConfigPath)
 	end)
-
-	assert(success, `failed to find {constants.ASSET_CONFIG_FILENAME} at {packagePath}: {err}`)
+	assert(success, `failed to read asset config at {assetConfigPath}: {err}`)
 
 	local parsedContent = serde.decode("toml", content)
 
-	assertPublicFieldType(parsedContent.name, "name", "string")
-
-	if parsedContent.description then
-		assertValueType(parsedContent.description, "description", "string")
-	end
-
-	if parsedContent.icon then
-		assertValueType(parsedContent.icon, "icon", "string")
-	end
-
-	if parsedContent.thumbnails then
-		assertArray(parsedContent.thumbnails, "thumbnails", "string")
-	end
-
-	if parsedContent.private then
-		assertValueType(parsedContent.private, "private", "boolean")
-	end
+	local isConfigValid, message = types.validateAssetConfig(parsedContent)
+	assert(isConfigValid, `failed to parse asset config at {assetConfigPath}: {message}`)
 
 	print("[debug] loaded asset config", parsedContent)
 

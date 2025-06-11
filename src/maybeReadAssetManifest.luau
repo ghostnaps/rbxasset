@@ -1,9 +1,8 @@
 local fs = require("@lune/fs")
 local serde = require("@lune/serde")
 
-local assertValueType = require("./validation/assertValueType")
-local constants = require("./constants")
-local types = require("./types")
+local constants = require("@root/constants")
+local types = require("@root/types")
 
 type AssetManifest = types.AssetManifest
 
@@ -25,7 +24,8 @@ local function maybeReadAssetManifest(packagePath: string): AssetManifest?
 
 	local parsedContent = serde.decode("toml", content)
 
-	assertValueType(parsedContent.assetId, "assetId", "string")
+	local isManifestValid, message = types.validateAssetManifest(parsedContent)
+	assert(isManifestValid, `failed to parse asset config at {assetManifestPath}: {message}`)
 
 	return parsedContent :: AssetManifest
 end
