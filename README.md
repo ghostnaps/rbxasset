@@ -17,12 +17,31 @@ Create an `rbxasset.toml` file in your project with the following content:
 name = "Display Name"
 description = "Longform project description"
 icon = "img/icon.png"
-distribute = false
+distribute = true
 
-[creator]
-creatorId = 1234567
-creatorType = "User"
+[deployment]
+creatorId = 35175308
+creatorType = "Group"
+universeId = 7854970752
+placeId = 119490202754966
 ```
+
+To get deployment to work properly, the following are required:
+* `creatorId`: The ID of the User or Group that will own the published asset
+* `creatorType`: Either `"User"` or `"Group"`. This is just to tell rbxasset how to interpret `creatorId`
+* `universeId`: The `game.GameId` of an experience that will be used for Luau Execution. The experience must be owned by the same Creator
+* `placeId`: The `game.PlaceId` of an experience that will be used for Luau Execution
+
+## API Key
+
+You will also need an Open Cloud API key with the following scopes:
+* `asset:read` and `asset:write`
+* `universe-places:write`
+* `universe.place.luau-execution-session:write`
+
+The resulting permissions should be setup similar to the following:
+
+![Screenshot of the Edit API Key page showing the access permissions](img/api-key-scopes.png)
 
 ## Package syncing
 
@@ -35,12 +54,11 @@ local process = require("@lune/process")
 
 local rbxasset = require("rbxasset")
 
-local content = process.args[1]
+local modelPath = process.args[1]
 local apiKey = process.args[2]
+local projectPath = process.cwd
 
-local assetConfig = rbxasset.readAssetConfig(process.cwd)
-
-rbxasset.syncPackage(assetConfig, content, apiKey)
+rbxasset.publishPackageAsync(projectPath, modelPath, apiKey)
 ```
 
 ```sh
@@ -48,56 +66,3 @@ $ lune run publish build.rbxm <API_KEY>
 ```
 
 Where `<API_KEY>` represents an Open Cloud API key with `asset:read` and `asset:write` permissions.
-
-# API
-
-## Types
-
-### AssetConfig
-
-```luau
-export type AssetConfig = {
-	name: string,
-	description: string?,
-	icon: string?,
-	thumbnails: { string }?,
-	private: boolean?,
-}
-```
-
-### AssetManifest
-
-```luau
-type Image = {
-	assetId: string,
-	hash: string,
-}
-
-export type AssetManifest = {
-	assetId: string,
-	images: { [string]: Image }?,
-}
-```
-
-## Functions
-
-### createDecalAsync
-
-### getAssetDetailsAsync
-
-### readAssetConfig
-
-`readAssetConfig(projectPath: string): AssetConfig`
-
-### maybeReadAssetManifest
-
-`maybeReadAssetManifest(projectPath: string): AssetManifest?`
-
-### writeAssetManifest
-
-`writeAssetManifest(projectPath: string, manifest: AssetManifest)`
-
-### setAssetDetailsAsync
-
-### waitForOperationAsync
-
