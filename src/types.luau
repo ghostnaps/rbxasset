@@ -1,4 +1,4 @@
-local t = require("@root/pkg/t")
+local t = require("@root/lib/t")
 
 local types = {}
 
@@ -14,6 +14,10 @@ export type AssetConfig = {
 		creatorId: number,
 		creatorType: "User" | "Group",
 	},
+	tasks: {
+		universeId: number,
+		placeId: number,
+	},
 }
 types.validateAssetConfig = t.strictInterface({
 	asset = t.strictInterface({
@@ -26,6 +30,10 @@ types.validateAssetConfig = t.strictInterface({
 	creator = t.strictInterface({
 		creatorId = t.union(t.string, t.number),
 		creatorType = t.union(t.literal("User"), t.literal("Group")),
+	}),
+	tasks = t.strictInterface({
+		universeId = t.number,
+		placeId = t.number,
 	}),
 })
 

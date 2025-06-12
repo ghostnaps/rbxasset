@@ -1,0 +1,8 @@
+temp
+
+# Roblox
+*.rbxm*
+*.rbxl*
+
+# Python
+__pycache__

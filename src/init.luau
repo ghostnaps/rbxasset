@@ -11,4 +11,5 @@ return {
 	setAssetDetailsAsync = require("@self/setAssetDetailsAsync"),
 	waitForOperationAsync = require("@self/waitForOperationAsync"),
 	writeAssetManifest = require("@self/writeAssetManifest"),
+	publishPackageAsync = require("@self/publishPackageAsync"),
 }

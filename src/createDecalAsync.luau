@@ -5,7 +5,7 @@ local run = require("@root/lib/run")
 local function createDecalAsync(
 	displayName: string,
 	imagePath: string,
-	creatorId: string,
+	creatorId: number,
 	creatorType: "User" | "Group",
 	apiKey: string
 ): string?
