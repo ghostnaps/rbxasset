@@ -10,11 +10,9 @@ export type AssetConfig = {
 		thumbnails: { string }?,
 		distribute: boolean?,
 	},
-	creator: {
+	deployment: {
 		creatorId: number,
 		creatorType: "User" | "Group",
-	},
-	tasks: {
 		universeId: number,
 		placeId: number,
 	},
@@ -27,11 +25,9 @@ types.validateAssetConfig = t.strictInterface({
 		thumbnails = t.optional(t.array(t.string)),
 		distribute = t.optional(t.boolean),
 	}),
-	creator = t.strictInterface({
+	deployment = t.strictInterface({
 		creatorId = t.union(t.string, t.number),
 		creatorType = t.union(t.literal("User"), t.literal("Group")),
-	}),
-	tasks = t.strictInterface({
 		universeId = t.number,
 		placeId = t.number,
 	}),

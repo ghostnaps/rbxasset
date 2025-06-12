@@ -4,10 +4,8 @@ description = "Longform description"
 icon = "icon.png"
 distribute = true
 
-[creator]
+[deployment]
 creatorId = 35175308
 creatorType = "Group"
-
-[tasks]
 universeId = 7854970752
 placeId = 119490202754966

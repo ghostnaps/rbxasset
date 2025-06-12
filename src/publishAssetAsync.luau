@@ -23,16 +23,16 @@ local function publishAssetAsync(
 	local assetDetails = if existingAssetId then getAssetDetailsAsync(existingAssetId, apiKey) else nil
 
 	local output = runLuauTask(publishAssetTask, {
-		CREATOR_ID = assetConfig.creator.creatorId,
-		CREATOR_TYPE = assetConfig.creator.creatorType,
+		CREATOR_ID = assetConfig.deployment.creatorId,
+		CREATOR_TYPE = assetConfig.deployment.creatorType,
 
 		-- Only provide the assetId from the manifest if there's a matching
 		-- asset on the Creator Store. We need this check in case the manifest
 		-- is edited manually to a nonexistent id
 		ASSET_ID = if assetDetails.assetId then existingAssetId else nil :: any,
 	}, {
-		universeId = assetConfig.tasks.universeId,
-		placeId = assetConfig.tasks.placeId,
+		universeId = assetConfig.deployment.universeId,
+		placeId = assetConfig.deployment.placeId,
 		modelPath = assetPath,
 		apiKey = apiKey,
 	})

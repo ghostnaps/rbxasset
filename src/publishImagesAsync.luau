@@ -41,8 +41,8 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 			local operationId = createDecalAsync(
 				`{assetConfig.asset.name} - Icon`,
 				iconPath,
-				assetConfig.creator.creatorId,
-				assetConfig.creator.creatorType,
+				assetConfig.deployment.creatorId,
+				assetConfig.deployment.creatorType,
 				apiKey
 			)
 
@@ -82,8 +82,8 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 			local operationId = createDecalAsync(
 				`{assetConfig.asset.name} - Thumbnail {index}`,
 				thumbnailPath,
-				assetConfig.creator.creatorId,
-				assetConfig.creator.creatorType,
+				assetConfig.deployment.creatorId,
+				assetConfig.deployment.creatorType,
 				apiKey
 			)
 
@@ -113,8 +113,8 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 		local output = runLuauTask(extractImageIdsFromDecalsTask, {
 			DECAL_IDS = table.concat(decalIds, ","),
 		}, {
-			universeId = assetConfig.tasks.universeId,
-			placeId = assetConfig.tasks.placeId,
+			universeId = assetConfig.deployment.universeId,
+			placeId = assetConfig.deployment.placeId,
 			apiKey = apiKey,
 		})
 
