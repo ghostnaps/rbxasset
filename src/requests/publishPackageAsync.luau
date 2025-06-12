@@ -1,9 +1,9 @@
 local process = require("@lune/process")
 
-local publishAssetAsync = require("@root/publishAssetAsync")
-local publishImagesAsync = require("@root/publishImagesAsync")
-local readAssetConfig = require("@root/readAssetConfig")
-local setAssetIconAsync = require("@root/setAssetIconAsync")
+local publishAssetAsync = require("@root/requests/publishAssetAsync")
+local publishImagesAsync = require("@root/requests/publishImagesAsync")
+local readAssetConfig = require("@root/manifest/readAssetConfig")
+local setAssetIconAsync = require("@root/requests/setAssetIconAsync")
 local types = require("@root/types")
 
 type AssetConfig = types.AssetConfig

@@ -1,13 +1,13 @@
 local fs = require("@lune/fs")
 local serde = require("@lune/serde")
 
-local createDecalAsync = require("@root/createDecalAsync")
+local createDecalAsync = require("@root/requests/createDecalAsync")
 local extractImageIdsFromDecalsTask = require("@root/tasks/extractImageIdsFromDecals")
-local maybeReadAssetManifest = require("@root/maybeReadAssetManifest")
+local maybeReadAssetManifest = require("@root/manifest/maybeReadAssetManifest")
 local runLuauTask = require("@root/lib/runLuauTask")
 local types = require("@root/types")
-local waitForOperationAsync = require("@root/waitForOperationAsync")
-local writeAssetManifest = require("@root/writeAssetManifest")
+local waitForOperationAsync = require("@root/requests/waitForOperationAsync")
+local writeAssetManifest = require("@root/manifest/writeAssetManifest")
 
 type AssetConfig = types.AssetConfig
 

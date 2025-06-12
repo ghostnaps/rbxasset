@@ -1,9 +1,9 @@
 local serde = require("@lune/serde")
 
-local maybeReadAssetManifest = require("@root/maybeReadAssetManifest")
+local maybeReadAssetManifest = require("@root/manifest/maybeReadAssetManifest")
 local run = require("@root/lib/run")
 local types = require("@root/types")
-local waitForOperationAsync = require("@root/waitForOperationAsync")
+local waitForOperationAsync = require("@root/requests/waitForOperationAsync")
 
 type AssetConfig = types.AssetConfig
 

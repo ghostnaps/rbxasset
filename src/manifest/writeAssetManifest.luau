@@ -1,8 +1,8 @@
 local fs = require("@lune/fs")
 local serde = require("@lune/serde")
 
-local constants = require("./constants")
-local types = require("./types")
+local constants = require("@root/constants")
+local types = require("@root/types")
 
 type AssetManifest = types.AssetManifest
 

@@ -4,9 +4,9 @@ export type AssetConfig = types.AssetConfig
 export type AssetManifest = types.AssetManifest
 
 return {
-	readAssetConfig = require("@self/readAssetConfig"),
-	writeAssetManifest = require("@self/writeAssetManifest"),
-	maybeReadAssetManifest = require("@self/maybeReadAssetManifest"),
+	readAssetConfig = require("@self/manifest/readAssetConfig"),
+	writeAssetManifest = require("@self/manifest/writeAssetManifest"),
+	maybeReadAssetManifest = require("@self/manifest/maybeReadAssetManifest"),
 
-	publishPackageAsync = require("@self/publishPackageAsync"),
+	publishPackageAsync = require("@self/requests/publishPackageAsync"),
 }

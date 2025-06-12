@@ -1,10 +1,10 @@
-local getAssetDetailsAsync = require("@root/getAssetDetailsAsync")
-local maybeReadAssetManifest = require("@root/maybeReadAssetManifest")
+local getAssetDetailsAsync = require("@root/requests/getAssetDetailsAsync")
+local maybeReadAssetManifest = require("@root/manifest/maybeReadAssetManifest")
 local publishAssetTask = require("@root/tasks/publishAsset")
 local runLuauTask = require("@root/lib/runLuauTask")
-local setAssetDetailsAsync = require("@root/setAssetDetailsAsync")
+local setAssetDetailsAsync = require("@root/requests/setAssetDetailsAsync")
 local types = require("@root/types")
-local writeAssetManifest = require("@root/writeAssetManifest")
+local writeAssetManifest = require("@root/manifest/writeAssetManifest")
 
 type AssetConfig = types.AssetConfig
 
