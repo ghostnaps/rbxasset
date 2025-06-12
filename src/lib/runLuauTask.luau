@@ -8,6 +8,18 @@ local TASK_PATH = `{TEMP_DIR}/task.luau`
 local ROJO_PROJECT_PATH = `{TEMP_DIR}/default.project.json`
 local BUILD_PATH = `{TEMP_DIR}/build.rbxl`
 
+local function extractVariablesFromOutput(output: string)
+	local result: { [string]: string } = {}
+	for key, value in output:gmatch("([%u_]+)=([%d%w]+)") do
+		if key and value then
+			value = value:gsub("(%s+)?.*(%s+)?", "")
+			result[key] = value
+		end
+	end
+
+	return result
+end
+
 local function runLuauTask(
 	taskBody: string,
 	globals: {
@@ -33,7 +45,11 @@ local function runLuauTask(
 		tree = {
 			["$className"] = "DataModel",
 			ReplicatedStorage = {
-				["$path"] = runnerContext.modelPath,
+				Build = if runnerContext.modelPath
+					then {
+						["$path"] = runnerContext.modelPath,
+					}
+					else nil,
 			},
 		},
 	}
@@ -59,17 +75,9 @@ local function runLuauTask(
 		},
 	})
 
-	fs.removeDir("temp")
+	run("rm", { "-rf", TEMP_DIR })
 
-	local result: { [string]: string } = {}
-	for key, value in output:gmatch("([%u_]+)=([%d%w]+)") do
-		if key and value then
-			value = value:gsub("(%s+)?.*(%s+)?", "")
-			result[key] = value
-		end
-	end
-
-	return result
+	return extractVariablesFromOutput(output)
 end
 
 return runLuauTask

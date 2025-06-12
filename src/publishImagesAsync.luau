@@ -27,9 +27,10 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 
 	local icon = assetConfig.asset.icon
 	if icon then
-		print("[info] syncing package icon...")
-
 		local iconPath = `{projectPath}/{icon}`
+
+		print(`[info] syncing package icon at {iconPath}`)
+
 		local iconHash = serde.hash("sha256", fs.readFile(iconPath))
 
 		if existingImages and existingImages[icon] and existingImages[icon].hash == iconHash then
@@ -119,7 +120,7 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 
 		local imageIds = output.IMAGE_IDS:split(",")
 
-		local newAssetManifest = table.clone(assetManifest)
+		local newAssetManifest = table.clone(assetManifest or {})
 		newAssetManifest.images = newAssetManifest.images or {}
 
 		for index, imageId in imageIds do

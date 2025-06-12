@@ -4,7 +4,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local function createOrUpdateAssetAsync(
 	instance: Instance,
-	creatorId: string,
+	creatorId: number,
 	creatorType: Enum.AssetCreatorType,
 	existingAssetId: string?
 ): (string, number)
@@ -49,15 +49,12 @@ local creatorType = assert(
 	"_G.CREATOR_TYPE must be a valid AssetCreatorType value"
 )
 
-local INSTANCE_NAME = _G.INSTANCE_NAME
-assert(INSTANCE_NAME, "_G.INSTANCE_NAME must be supplied")
-
 local ASSET_ID: string? = _G.ASSET_ID
 
-local root = ReplicatedStorage:FindFirstChild(INSTANCE_NAME)
-assert(root, `no instance found for upload at ReplicatedStorage.{INSTANCE_NAME}`)
+local instance = ReplicatedStorage:GetChildren()[1]
+assert(instance, `no instance found for upload in ReplicatedStorage`)
 
-local remoteAssetId, versionNumber = createOrUpdateAssetAsync(root, creatorId, creatorType, ASSET_ID)
+local remoteAssetId, versionNumber = createOrUpdateAssetAsync(instance, creatorId, creatorType, ASSET_ID)
 
 print(`ASSET_ID={remoteAssetId}`)
 print(`VERSION_NUMBER={versionNumber}`)

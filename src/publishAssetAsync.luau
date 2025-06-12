@@ -22,7 +22,6 @@ local function publishAssetAsync(
 
 	local assetDetails = if existingAssetId then getAssetDetailsAsync(existingAssetId, apiKey) else nil
 
-	-- TODO: Account for `assetPath` so it can be added to the uploaded experience
 	local output = runLuauTask(publishAssetTask, {
 		CREATOR_ID = assetConfig.creator.creatorId,
 		CREATOR_TYPE = assetConfig.creator.creatorType,
@@ -30,10 +29,7 @@ local function publishAssetAsync(
 		-- Only provide the assetId from the manifest if there's a matching
 		-- asset on the Creator Store. We need this check in case the manifest
 		-- is edited manually to a nonexistent id
-		PACKAGE_ASSET_ID = if assetDetails then existingAssetId else nil :: any,
-
-		-- TODO: Figure out another way to discovery the instance to publish
-		-- INSTANCE_NAME = rotrieverConfig.package.name,
+		ASSET_ID = if assetDetails.assetId then existingAssetId else nil :: any,
 	}, {
 		universeId = assetConfig.tasks.universeId,
 		placeId = assetConfig.tasks.placeId,
@@ -52,7 +48,7 @@ local function publishAssetAsync(
 			description = assetConfig.asset.description,
 		})
 
-		local newAssetManifest = table.clone(assetManifest)
+		local newAssetManifest = table.clone(assetManifest or {})
 		newAssetManifest.assetId = assetId
 
 		writeAssetManifest(projectPath, newAssetManifest)

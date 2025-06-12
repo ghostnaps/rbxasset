@@ -4,12 +4,17 @@ local InsertService = game:GetService("InsertService")
 local function extractImageAssetFromDecals(decalIds: { string }): { string }
 	local imageIds: { string } = {}
 
-	for _, decalId in decalIds do
+	for _, decalIdStr in decalIds do
+		local decalId = assert(tonumber(decalIdStr), `could not convert {decalIdStr} into a number`)
+		print(`[info] loaded asset with ID {decalId}`)
 		local asset = InsertService:LoadAsset(decalId)
 		local decal = asset:FindFirstChildOfClass("Decal")
 
 		if decal then
-			table.insert(imageIds, decal.Texture:match("(%d+)$"))
+			local imageId = decal.Texture:match("(%d+)$")
+			assert(imageId, `failed to parse a valid asset ID from string "{decal.Texture}"`)
+			print(`[info] extracted Image ID {imageId} from Decal {decalId}`)
+			table.insert(imageIds, imageId)
 		end
 	end
 

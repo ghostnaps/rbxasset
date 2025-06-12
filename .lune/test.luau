@@ -18,7 +18,7 @@ local result = process.exec("rojo", {
 	"-o",
 	assetPath,
 })
-assert(result.ok, `process completed with non-zero exit code {result.code}`)
+assert(result.ok, `process completed with non-zero exit code {result.stderr}`)
 print(`[info] built project to {assetPath}`)
 
 rbxasset.publishPackageAsync(projectPath, assetPath, apiKey)

@@ -1,7 +1,7 @@
 [asset]
 name = "Display Name"
-description = "Longform project description"
-icon = "img/icon.png"
+description = "Longform description"
+icon = "icon.png"
 distribute = true
 
 [creator]
