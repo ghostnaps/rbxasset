@@ -29,7 +29,7 @@ local function publishAssetAsync(
 		-- Only provide the assetId from the manifest if there's a matching
 		-- asset on the Creator Store. We need this check in case the manifest
 		-- is edited manually to a nonexistent id
-		ASSET_ID = if assetDetails.assetId then existingAssetId else nil :: any,
+		ASSET_ID = if assetDetails and assetDetails.assetId then existingAssetId else nil :: any,
 	}, {
 		universeId = assetConfig.deployment.universeId,
 		placeId = assetConfig.deployment.placeId,
