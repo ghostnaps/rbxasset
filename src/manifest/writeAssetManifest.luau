@@ -2,6 +2,7 @@ local fs = require("@lune/fs")
 local serde = require("@lune/serde")
 
 local constants = require("@root/constants")
+local logging = require("@root/logging")
 local types = require("@root/types")
 
 type AssetManifest = types.AssetManifest
@@ -10,7 +11,7 @@ local function writeAssetManifest(packagePath: string, assetManifest: AssetManif
 	local assetManifestPath = `{packagePath}/{constants.ASSET_MANIFEST_FILENAME}`
 	fs.writeFile(assetManifestPath, serde.encode("toml", assetManifest))
 
-	print(`[debug] wrote asset manifest {assetManifestPath}`)
+	logging.debug(`wrote asset manifest {assetManifestPath}`)
 end
 
 return writeAssetManifest

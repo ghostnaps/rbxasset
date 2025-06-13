@@ -1,5 +1,6 @@
 local process = require("@lune/process")
 
+local logging = require("@root/logging")
 local publishAssetAsync = require("@root/requests/publishAssetAsync")
 local publishImagesAsync = require("@root/requests/publishImagesAsync")
 local readAssetConfig = require("@root/manifest/readAssetConfig")
@@ -12,7 +13,7 @@ local function publishPackageAsync(projectPath: string, assetPath: string, apiKe
 	local assetConfig = readAssetConfig(projectPath)
 
 	if not assetConfig.asset.distribute then
-		print("[err] refusing to publish because `distribute` is set to `false`")
+		logging.err("refusing to publish because `distribute` is set to `false`")
 		process.exit(1)
 	end
 
@@ -20,8 +21,8 @@ local function publishPackageAsync(projectPath: string, assetPath: string, apiKe
 	publishImagesAsync(projectPath, assetConfig, apiKey)
 	setAssetIconAsync(projectPath, assetConfig, apiKey)
 
-	print("[info] package published successfully! View it on the Creator Store:")
-	print(`[info] https://create.roblox.com/store/asset/{assetId}`)
+	logging.info("package published successfully! View it on the Creator Store:")
+	logging.info(`https://create.roblox.com/store/asset/{assetId}`)
 end
 
 return publishPackageAsync

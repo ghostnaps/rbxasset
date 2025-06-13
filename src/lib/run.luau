@@ -1,5 +1,6 @@
 local process = require("@lune/process")
-local stdio = require("@lune/stdio")
+
+local logging = require("@root/logging")
 
 type Options = {
 	cwd: string?,
@@ -7,9 +8,7 @@ type Options = {
 }
 
 local function run(program: string, params: { string }, options: Options?): string
-	stdio.write(stdio.style("bold"))
-	print(`> {program} {table.concat(params, " ")}`)
-	stdio.write(stdio.style("reset"))
+	logging.debug(`RUN > {program} {table.concat(params, " ")}`)
 
 	local result = process.exec(program, params, {
 		stdio = "inherit",

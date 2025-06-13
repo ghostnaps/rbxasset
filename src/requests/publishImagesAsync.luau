@@ -2,6 +2,7 @@ local fs = require("@lune/fs")
 local serde = require("@lune/serde")
 
 local createImageAsync = require("@root/requests/createImageAsync")
+local logging = require("@root/logging")
 local maybeReadAssetManifest = require("@root/manifest/maybeReadAssetManifest")
 local types = require("@root/types")
 local waitForOperationAsync = require("@root/requests/waitForOperationAsync")
@@ -27,14 +28,14 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 	if icon then
 		local iconPath = `{projectPath}/{icon}`
 
-		print(`[info] syncing package icon at {iconPath}`)
+		logging.info(`syncing package icon at {iconPath}`)
 
 		local iconHash = serde.hash("sha256", fs.readFile(iconPath))
 
 		if existingImages and existingImages[icon] and existingImages[icon].hash == iconHash then
-			print(`[debug] hashes match for {iconPath}, skipping...`)
+			logging.debug(`hashes match for {iconPath}, skipping...`)
 		else
-			print(`[info] uploading image at {iconPath}...`)
+			logging.info(`uploading image at {iconPath}...`)
 
 			local operationId = createImageAsync(
 				`{assetConfig.asset.name} - Icon`,
@@ -54,16 +55,16 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 					assetId = assetId,
 				})
 
-				print(`[debug] image uploaded successfully`)
+				logging.debug(`image uploaded successfully`)
 			else
-				print(`[warn] failed to upload image at {iconPath}`)
+				logging.warn(`failed to upload image at {iconPath}`)
 			end
 		end
 	end
 
 	local thumbnails = assetConfig.asset.thumbnails
 	if thumbnails then
-		print("[info] syncing package thumbnails...")
+		logging.info("syncing package thumbnails...")
 
 		for index, thumbnailFilename in thumbnails do
 			local thumbnailPath = `{projectPath}/{thumbnailFilename}`
@@ -71,11 +72,11 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 
 			local existingThumbnail = existingImages and existingImages[thumbnailFilename]
 			if existingThumbnail and existingThumbnail.hash == thumbnailHash then
-				print(`[debug] hashes match for {thumbnailPath}, skipping...`)
+				logging.debug(`hashes match for {thumbnailPath}, skipping...`)
 				continue
 			end
 
-			print(`[info] uploading image at {thumbnailPath}`)
+			logging.info(`uploading image at {thumbnailPath}`)
 
 			local operationId = createImageAsync(
 				`{assetConfig.asset.name} - Thumbnail {index}`,
@@ -95,9 +96,9 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 					assetId = assetId,
 				})
 
-				print(`[debug] image uploaded successfully`)
+				logging.debug(`image uploaded successfully`)
 			else
-				print(`[warn] failed to upload image at {thumbnailPath}`)
+				logging.warn(`failed to upload image at {thumbnailPath}`)
 			end
 		end
 	end
@@ -119,10 +120,10 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 
 		writeAssetManifest(projectPath, newAssetManifest)
 	else
-		print("[debug] no new images to write to the manifest. skipping...")
+		logging.debug("no new images to write to the manifest. skipping...")
 	end
 
-	print("[info] successfully synced images to Creator Store")
+	logging.info("successfully synced images to Creator Store")
 end
 
 return publishImagesAsync
