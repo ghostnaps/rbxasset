@@ -1,6 +1,17 @@
+local fs = require("@lune/fs")
+local net = require("@lune/net")
 local serde = require("@lune/serde")
 
-local run = require("@root/lib/run")
+local function createFormData(data: { [string]: { value: any, type: string } })
+	local boundary = "--" .. serde.hash("md5", tostring(math.random()))
+	local body = ""
+	for key, field in data do
+		body ..= boundary .. "\r\nContent-Disposition: form-data; name=" .. key .. "\r\nContent-type: " .. field.type .. "\r\n\r\n" .. field.value .. "\r\n"
+	end
+	body ..= boundary .. "--\r\n"
+
+	return body
+end
 
 local function createDecalAsync(
 	displayName: string,
@@ -21,19 +32,30 @@ local function createDecalAsync(
 		},
 	})
 
-	local output = run("curl", {
-		"--location",
-		"https://apis.roblox.com/assets/v1/assets",
-		"--header",
-		`'x-api-key: {apiKey}'`,
-		"--form",
-		`request='{request}'`,
-		"--form",
-		`fileContent=@{imagePath};type=image/png`,
-	})
-	local res = serde.decode("json", output)
+	local imageContent = fs.readFile(imagePath)
 
-	return res.operationId
+	local res = net.request({
+		url = "https://apis.roblox.com/assets/v1/assets",
+		method = "POST",
+		headers = {
+			["x-api-key"] = apiKey,
+			["Content-Type"] = "multipart/form-data",
+		},
+		body = createFormData({
+			request = {
+				value = request,
+				type = "text/plain",
+			},
+			fileContent = {
+				value = imageContent,
+				type = "image/png",
+			},
+		}),
+	})
+
+	local body = serde.decode("json", res.body)
+
+	return body.operationId
 end
 
 return createDecalAsync
