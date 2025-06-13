@@ -1,25 +1,23 @@
 local fs = require("@lune/fs")
 local serde = require("@lune/serde")
 
-local createDecalAsync = require("@root/requests/createDecalAsync")
-local extractImageIdsFromDecalsTask = require("@root/tasks/extractImageIdsFromDecals")
+local createImageAsync = require("@root/requests/createImageAsync")
 local maybeReadAssetManifest = require("@root/manifest/maybeReadAssetManifest")
-local runLuauTask = require("@root/lib/runLuauTask")
 local types = require("@root/types")
 local waitForOperationAsync = require("@root/requests/waitForOperationAsync")
 local writeAssetManifest = require("@root/manifest/writeAssetManifest")
 
 type AssetConfig = types.AssetConfig
 
-type PendingDecal = {
+type PendingImage = {
 	path: string,
 	filename: string,
-	decalId: string,
+	assetId: string,
 }
 
 local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig, apiKey: string)
 	local assetManifest = maybeReadAssetManifest(projectPath)
-	local pendingDecals: { PendingDecal } = {}
+	local pendingImages: { PendingImage } = {}
 
 	local existingImages = if assetManifest
 		then assetManifest.images
@@ -36,9 +34,9 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 		if existingImages and existingImages[icon] and existingImages[icon].hash == iconHash then
 			print(`[debug] hashes match for {iconPath}, skipping...`)
 		else
-			print(`[info] uploading decal for image at {iconPath}...`)
+			print(`[info] uploading image at {iconPath}...`)
 
-			local operationId = createDecalAsync(
+			local operationId = createImageAsync(
 				`{assetConfig.asset.name} - Icon`,
 				iconPath,
 				assetConfig.deployment.creatorId,
@@ -48,17 +46,17 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 
 			if operationId then
 				local body = waitForOperationAsync(operationId, apiKey)
-				local decalId = body.response.assetId
+				local assetId = body.response.assetId
 
-				table.insert(pendingDecals, {
+				table.insert(pendingImages, {
 					path = iconPath,
 					filename = icon,
-					decalId = decalId,
+					assetId = assetId,
 				})
 
-				print(`[debug] decal uploaded successfully`)
+				print(`[debug] image uploaded successfully`)
 			else
-				print(`[warn] failed to upload decal at {iconPath}`)
+				print(`[warn] failed to upload image at {iconPath}`)
 			end
 		end
 	end
@@ -77,9 +75,9 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 				continue
 			end
 
-			print(`[info] uploading decal for image at {thumbnailPath}`)
+			print(`[info] uploading image at {thumbnailPath}`)
 
-			local operationId = createDecalAsync(
+			local operationId = createImageAsync(
 				`{assetConfig.asset.name} - Thumbnail {index}`,
 				thumbnailPath,
 				assetConfig.deployment.creatorId,
@@ -89,60 +87,39 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 
 			if operationId then
 				local body = waitForOperationAsync(operationId, apiKey)
-				local decalId = body.response.assetId
+				local assetId = body.response.assetId
 
-				table.insert(pendingDecals, {
+				table.insert(pendingImages, {
 					path = thumbnailPath,
 					filename = thumbnailFilename,
-					decalId = decalId,
+					assetId = assetId,
 				})
 
-				print(`[debug] decal uploaded successfully`)
+				print(`[debug] image uploaded successfully`)
 			else
-				print(`[warn] failed to upload decal at {thumbnailPath}`)
+				print(`[warn] failed to upload image at {thumbnailPath}`)
 			end
 		end
 	end
 
-	if #pendingDecals > 0 then
-		local decalIds: { string } = {}
-		for _, pendingDecal in pendingDecals do
-			table.insert(decalIds, pendingDecal.decalId)
-		end
-
-		local output = runLuauTask(extractImageIdsFromDecalsTask, {
-			DECAL_IDS = table.concat(decalIds, ","),
-		}, {
-			universeId = assetConfig.deployment.universeId,
-			placeId = assetConfig.deployment.placeId,
-			apiKey = apiKey,
-		})
-
-		local imageIds = output.IMAGE_IDS:split(",")
-
+	if #pendingImages > 0 then
 		local newAssetManifest = table.clone(assetManifest or {})
 		newAssetManifest.images = newAssetManifest.images or {}
 
-		for index, imageId in imageIds do
-			local pendingDecal = pendingDecals[index]
+		for _, pendingImage in pendingImages do
+			newAssetManifest.images[pendingImage.filename] = {
+				assetId = pendingImage.assetId,
+				hash = serde.hash("sha256", fs.readFile(pendingImage.path)),
+			}
 
-			if pendingDecal then
-				newAssetManifest.images[pendingDecal.filename] = {
-					assetId = imageId,
-					hash = serde.hash("sha256", fs.readFile(pendingDecal.path)),
-				}
-
-				print(
-					`[debug] image {pendingDecal.path} uploaded successfully: https://create.roblox.com/store/asset/{imageId}`
-				)
-			else
-				print(`[warn] could not map imageId {imageId} back to a pending decal at index {index}`)
-			end
+			print(
+				`[debug] image {pendingImage.path} uploaded successfully: https://create.roblox.com/store/asset/{pendingImage.assetId}`
+			)
 		end
 
 		writeAssetManifest(projectPath, newAssetManifest)
 	else
-		print(`[debug] no new decals to extract images from. skipping...`)
+		print("[debug] no new images to write to the manifest. skipping...")
 	end
 
 	print("[info] successfully synced images to Creator Store")
