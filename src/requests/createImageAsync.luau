@@ -4,7 +4,7 @@ local serde = require("@lune/serde")
 
 type FormField = {
 	value: any,
-	type: string,
+	contentType: string,
 	filename: string?,
 }
 
@@ -13,10 +13,10 @@ local function createFormDataBody(boundary: string, data: { [string]: FormField 
 
 	for key, field in data do
 		local lines = {
-			boundary,
+			`--{boundary}`,
 			`Content-Disposition: form-data; name="{key}"`
 				.. if field.filename then `; filename="{field.filename}"` else "",
-			`Content-Type: {field.type}`,
+			`Content-Type: {field.contentType}`,
 			"",
 			field.value,
 		}
@@ -24,13 +24,13 @@ local function createFormDataBody(boundary: string, data: { [string]: FormField 
 		table.insert(body, table.concat(lines, "\r\n"))
 	end
 
-	table.insert(body, `{boundary}--\r\n`)
+	table.insert(body, `--{boundary}--\r\n`)
 
 	return table.concat(body, "\r\n")
 end
 
 local function createFormData(data: { [string]: FormField })
-	local boundary = "--LuauFormBoundary" .. serde.hash("md5", tostring(math.random()))
+	local boundary = "LuauFormBoundary" .. serde.hash("md5", tostring(math.random()))
 	local body = createFormDataBody(boundary, data)
 
 	return {
@@ -61,16 +61,14 @@ local function createImageAsync(
 	local formData = createFormData({
 		request = {
 			value = request,
-			type = "text/plain",
+			contentType = "application/json",
 		},
 		fileContent = {
-			filename = imagePath,
-			value = buffer.fromstring(fs.readFile(imagePath)),
-			type = "image/png",
+			filename = imagePath:match("[/\\](.+)$"),
+			value = fs.readFile(imagePath),
+			contentType = "image/png",
 		},
 	})
-
-	print("formData.body", formData.body)
 
 	local res = net.request({
 		url = "https://apis.roblox.com/assets/v1/assets",
@@ -81,8 +79,6 @@ local function createImageAsync(
 		},
 		body = formData.body,
 	})
-
-	print("body", res.body)
 
 	local body = serde.decode("json", res.body)
 
