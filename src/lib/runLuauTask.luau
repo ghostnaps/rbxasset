@@ -1,8 +1,10 @@
 local fs = require("@lune/fs")
+local net = require("@lune/net")
 local serde = require("@lune/serde")
 
 local logging = require("@root/logging")
 local run = require("@root/lib/run")
+local waitForOperationAsync = require("@root/requests/waitForOperationAsync")
 
 local TEMP_DIR = "temp"
 local TASK_PATH = `{TEMP_DIR}/task.luau`
@@ -46,6 +48,8 @@ local function runLuauTask(
 		tree = {
 			["$className"] = "DataModel",
 			ReplicatedStorage = {
+				-- TODO: Figure out if there's a clean way to retain the name of
+				-- the instance
 				Build = if runnerContext.modelPath
 					then {
 						["$path"] = runnerContext.modelPath,
@@ -77,6 +81,25 @@ local function runLuauTask(
 	})
 
 	run("rm", { "-rf", TEMP_DIR })
+
+	if runnerContext.modelPath then
+		logging.info("checking the children in the place")
+		local res = net.request({
+			method = "GET",
+			url = `https://apis.roblox.com/cloud/v2/universes/{runnerContext.universeId}/places/{runnerContext.placeId}/instances/root:listChildren`,
+			headers = {
+				["x-api-key"] = runnerContext.apiKey,
+			},
+		})
+
+		local body = serde.decode("json", res.body)
+
+		print("body", body)
+
+		local operation = waitForOperationAsync(body.path, runnerContext.apiKey)
+
+		print("operation", operation)
+	end
 
 	return extractVariablesFromOutput(output)
 end

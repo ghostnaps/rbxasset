@@ -48,14 +48,14 @@ local function setAssetIconAsync(projectPath: string, assetConfig: AssetConfig, 
 		`'request={request}'`,
 	})
 
-	local operationId = serde.decode("json", output).operationId
+	local operationPath = serde.decode("json", output).operationPath
 
-	if not operationId then
+	if not operationPath then
 		logging.err(`failed to set asset icon`)
 		return
 	end
 
-	local body = waitForOperationAsync(operationId, apiKey)
+	local body = waitForOperationAsync(operationPath, apiKey)
 
 	if body.error then
 		local problems = {}

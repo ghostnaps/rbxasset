@@ -33,7 +33,7 @@ local function createImageAsync(
 	})
 	local res = serde.decode("json", output)
 
-	return res.operationId
+	return res.operationPath
 end
 
 return createImageAsync

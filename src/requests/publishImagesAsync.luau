@@ -37,7 +37,7 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 		else
 			logging.info(`uploading image at {iconPath}...`)
 
-			local operationId = createImageAsync(
+			local operationPath = createImageAsync(
 				`{assetConfig.asset.name} - Icon`,
 				iconPath,
 				assetConfig.deployment.creatorId,
@@ -45,8 +45,8 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 				apiKey
 			)
 
-			if operationId then
-				local body = waitForOperationAsync(operationId, apiKey)
+			if operationPath then
+				local body = waitForOperationAsync(operationPath, apiKey)
 				local assetId = body.response.assetId
 
 				table.insert(pendingImages, {
@@ -78,7 +78,7 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 
 			logging.info(`uploading image at {thumbnailPath}`)
 
-			local operationId = createImageAsync(
+			local operationPath = createImageAsync(
 				`{assetConfig.asset.name} - Thumbnail {index}`,
 				thumbnailPath,
 				assetConfig.deployment.creatorId,
@@ -86,8 +86,8 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 				apiKey
 			)
 
-			if operationId then
-				local body = waitForOperationAsync(operationId, apiKey)
+			if operationPath then
+				local body = waitForOperationAsync(operationPath, apiKey)
 				local assetId = body.response.assetId
 
 				table.insert(pendingImages, {
