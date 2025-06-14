@@ -1,6 +1,7 @@
 local fs = require("@lune/fs")
 local serde = require("@lune/serde")
 
+local logging = require("@root/logging")
 local run = require("@root/lib/run")
 
 local TEMP_DIR = "temp"
@@ -39,7 +40,7 @@ local function runLuauTask(
 	end
 	fs.writeFile(TASK_PATH, taskBody)
 
-	print("[info] creating Rojo project")
+	logging.info("creating Rojo project")
 	local rojoProject = {
 		name = "Build",
 		tree = {

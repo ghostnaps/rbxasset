@@ -9,7 +9,7 @@ local function createOrUpdateAssetAsync(
 	existingAssetId: string?
 ): (string, number)
 	if existingAssetId then
-		print(`[info] updating asset with ID {existingAssetId}`)
+		print(`updating asset with ID {existingAssetId}`)
 
 		local _success, versionNumber =
 			AssetService:CreateAssetVersionAsync(instance, Enum.AssetType.Model, existingAssetId, {
@@ -17,11 +17,11 @@ local function createOrUpdateAssetAsync(
 				CreatorType = creatorType,
 			})
 
-		print(`[info] updated asset to version {versionNumber}`)
+		print(`updated asset to version {versionNumber}`)
 
 		return existingAssetId, versionNumber
 	else
-		print("[info] creating asset for the first time")
+		print("creating asset for the first time")
 
 		local _success, assetId = AssetService:CreateAssetAsync(instance, Enum.AssetType.Model, {
 			Name = instance.Name,
@@ -30,7 +30,7 @@ local function createOrUpdateAssetAsync(
 			IsPackage = true,
 		})
 
-		print(`[info] created asset with ID {assetId}`)
+		print(`created asset with ID {assetId}`)
 
 		return assetId, 1
 	end

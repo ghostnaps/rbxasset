@@ -39,7 +39,7 @@ local function createFormData(data: { [string]: FormField })
 	}
 end
 
-local function createDecalAsync(
+local function createImageAsync(
 	displayName: string,
 	imagePath: string,
 	creatorId: number,
@@ -49,7 +49,7 @@ local function createDecalAsync(
 	local creatorIdKey = if creatorType == "User" then "userId" else "groupId"
 
 	local request = serde.encode("json", {
-		assetType = "Decal",
+		assetType = "Image",
 		displayName = displayName,
 		creationContext = {
 			creator = {
@@ -89,4 +89,4 @@ local function createDecalAsync(
 	return body.operationId
 end
 
-return createDecalAsync
+return createImageAsync
