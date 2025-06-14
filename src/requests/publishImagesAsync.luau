@@ -5,7 +5,6 @@ local createImageAsync = require("@root/requests/createImageAsync")
 local logging = require("@root/logging")
 local maybeReadAssetManifest = require("@root/manifest/maybeReadAssetManifest")
 local types = require("@root/types")
-local waitForOperationAsync = require("@root/requests/waitForOperationAsync")
 local writeAssetManifest = require("@root/manifest/writeAssetManifest")
 
 type AssetConfig = types.AssetConfig
@@ -37,7 +36,7 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 		else
 			logging.info(`uploading image at {iconPath}...`)
 
-			local operationId = createImageAsync(
+			local operation = createImageAsync(
 				`{assetConfig.asset.name} - Icon`,
 				iconPath,
 				assetConfig.deployment.creatorId,
@@ -45,10 +44,9 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 				apiKey
 			)
 
-			if operationId then
-				local body = waitForOperationAsync(operationId, apiKey)
-				local assetId = body.response.assetId
+			local assetId = operation.response.assetId
 
+			if assetId then
 				table.insert(pendingImages, {
 					path = iconPath,
 					filename = icon,
@@ -78,7 +76,7 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 
 			logging.info(`uploading image at {thumbnailPath}`)
 
-			local operationId = createImageAsync(
+			local operation = createImageAsync(
 				`{assetConfig.asset.name} - Thumbnail {index}`,
 				thumbnailPath,
 				assetConfig.deployment.creatorId,
@@ -86,10 +84,9 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 				apiKey
 			)
 
-			if operationId then
-				local body = waitForOperationAsync(operationId, apiKey)
-				local assetId = body.response.assetId
+			local assetId = operation.response.assetId
 
+			if assetId then
 				table.insert(pendingImages, {
 					path = thumbnailPath,
 					filename = thumbnailFilename,

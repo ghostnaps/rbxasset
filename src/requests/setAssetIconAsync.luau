@@ -1,12 +1,15 @@
+local net = require("@lune/net")
 local serde = require("@lune/serde")
 
+local createFormData = require("@root/requests/forms/createFormData")
 local logging = require("@root/logging")
 local maybeReadAssetManifest = require("@root/manifest/maybeReadAssetManifest")
-local run = require("@root/lib/run")
 local types = require("@root/types")
 local waitForOperationAsync = require("@root/requests/waitForOperationAsync")
 
 type AssetConfig = types.AssetConfig
+
+local ASSETS_BASE_URL = "https://apis.roblox.com/assets/v1"
 
 local function setAssetIconAsync(projectPath: string, assetConfig: AssetConfig, apiKey: string)
 	if not assetConfig.asset.icon then
@@ -37,25 +40,31 @@ local function setAssetIconAsync(projectPath: string, assetConfig: AssetConfig, 
 		icon = `assets/{iconImage.assetId}`,
 	})
 
-	local output = run("curl", {
-		"--location",
-		"--request",
-		"PATCH",
-		`https://apis.roblox.com/assets/v1/assets/{assetId}?updateMask=icon`,
-		"--header",
-		`'x-api-key: {apiKey}'`,
-		"--form",
-		`'request={request}'`,
+	local formData = createFormData({
+		request = {
+			value = request,
+			contentType = "application/json",
+		},
 	})
 
-	local operationId = serde.decode("json", output).operationId
+	local res = net.request({
+		url = `{ASSETS_BASE_URL}/assets/{assetId}?updateMask=icon`,
+		method = "PATCH",
+		headers = {
+			["x-api-key"] = apiKey,
+			["Content-Type"] = `multipart/form-data; boundary={formData.boundary}`,
+		},
+		body = formData.body,
+	})
 
-	if not operationId then
+	local operation = serde.decode("json", res.body)
+
+	if not operation.path then
 		logging.err(`failed to set asset icon`)
 		return
 	end
 
-	local body = waitForOperationAsync(operationId, apiKey)
+	local body = waitForOperationAsync(operation.path, apiKey, ASSETS_BASE_URL)
 
 	if body.error then
 		local problems = {}

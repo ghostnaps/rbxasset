@@ -3,6 +3,9 @@ local net = require("@lune/net")
 local serde = require("@lune/serde")
 
 local createFormData = require("@root/requests/forms/createFormData")
+local waitForOperationAsync = require("@root/requests/waitForOperationAsync")
+
+local ASSETS_URL = "https://apis.roblox.com/assets/v1"
 
 local function createImageAsync(
 	displayName: string,
@@ -10,7 +13,7 @@ local function createImageAsync(
 	creatorId: number,
 	creatorType: "User" | "Group",
 	apiKey: string
-): string?
+)
 	local creatorIdKey = if creatorType == "User" then "userId" else "groupId"
 
 	local request = serde.encode("json", {
@@ -36,7 +39,7 @@ local function createImageAsync(
 	})
 
 	local res = net.request({
-		url = "https://apis.roblox.com/assets/v1/assets",
+		url = `{ASSETS_URL}/assets`,
 		method = "POST",
 		headers = {
 			["x-api-key"] = apiKey,
@@ -47,7 +50,7 @@ local function createImageAsync(
 
 	local body = serde.decode("json", res.body)
 
-	return body.operationId
+	return waitForOperationAsync(body.path, apiKey, ASSETS_URL)
 end
 
 return createImageAsync
