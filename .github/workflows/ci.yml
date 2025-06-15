@@ -15,6 +15,7 @@ jobs:
       - uses: Roblox/setup-foreman@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          allow-external-github-orgs: true
 
       - name: Install dependencies
         run: lune run install
@@ -30,6 +31,7 @@ jobs:
       - uses: Roblox/setup-foreman@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          allow-external-github-orgs: true
 
       - name: Install dependencies
         run: lune run install
