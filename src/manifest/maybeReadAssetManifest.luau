@@ -2,6 +2,7 @@ local fs = require("@lune/fs")
 local serde = require("@lune/serde")
 
 local constants = require("@root/constants")
+local logging = require("@root/logging")
 local types = require("@root/types")
 
 type AssetManifest = types.AssetManifest
@@ -16,11 +17,11 @@ local function maybeReadAssetManifest(packagePath: string): AssetManifest?
 	-- It's expected that the manifest won't exist in certain situations, like
 	-- on the first upload of the asset. So we just early exit here
 	if not success then
-		print("[debug] no asset manifest found")
+		logging.debug("no asset manifest found")
 		return nil
 	end
 
-	print(`[debug] found asset manifest at {assetManifestPath}`)
+	logging.debug(`found asset manifest at {assetManifestPath}`)
 
 	local parsedContent = serde.decode("toml", content)
 
