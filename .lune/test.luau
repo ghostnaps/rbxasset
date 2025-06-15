@@ -1,25 +1,22 @@
-local process = require("@lune/process")
-
+local console_reporter = require("@pkg/frktest/src/reporters/console_reporter")
+local frktest = require("@pkg/frktest/src/frktest")
 local logging = require("@root/logging")
-local rbxasset = require("@root/")
+local run = require("@root/lib/run")
 
-local apiKey = process.args[1]
-if typeof(apiKey) ~= "string" then
-	logging.err(`argument #1 must be an Open Cloud API key (string expected, got {typeof(apiKey)})`)
-	process.exit(1)
+local function loadTestCases()
+	local output = run("find", { "src", "-iname", "*.spec.luau" })
+	output = output:gsub("src/", "@root/")
+
+	local files = output:split("\n")
+
+	logging.debug("files", files)
+
+	for _, file in files do
+		(require :: any)(file)
+	end
 end
 
-local projectPath = `{process.cwd}examples/package`
-local assetPath = `{process.cwd}asset.rbxm`
+loadTestCases()
 
-logging.info("building project...")
-local result = process.exec("rojo", {
-	"build",
-	`{projectPath}/default.project.json`,
-	"-o",
-	assetPath,
-})
-assert(result.ok, `process completed with non-zero exit code {result.stderr}`)
-logging.info(`built project to {assetPath}`)
-
-rbxasset.publishPackageAsync(projectPath, assetPath, apiKey)
+console_reporter.init()
+frktest.run()
