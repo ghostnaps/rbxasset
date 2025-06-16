@@ -1,6 +1,7 @@
-local net = require("@lune/net")
 local serde = require("@lune/serde")
 local task = require("@lune/task")
+
+local fetch = require("@root/requests/fetch")
 
 local MAX_RETRIES = 5
 local RETRY_MULTIPLIER = 2
@@ -20,8 +21,7 @@ local function waitForAssetOperationAsync(operationId: string, apiKey: string): 
 	local retryPollingDelay = 1
 
 	while currentRetries < MAX_RETRIES do
-		local res = net.request({
-			url = `https://apis.roblox.com/assets/v1/operations/{operationId}`,
+		local res = fetch(`https://apis.roblox.com/assets/v1/operations/{operationId}`, {
 			method = "GET",
 			headers = {
 				["x-api-key"] = apiKey,

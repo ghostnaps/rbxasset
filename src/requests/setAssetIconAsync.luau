@@ -1,7 +1,7 @@
-local net = require("@lune/net")
 local serde = require("@lune/serde")
 
 local createFormData = require("@root/requests/forms/createFormData")
+local fetch = require("@root/requests/fetch")
 local logging = require("@root/logging")
 local maybeReadAssetManifest = require("@root/manifest/maybeReadAssetManifest")
 local types = require("@root/types")
@@ -47,8 +47,7 @@ local function setAssetIconAsync(projectPath: string, assetConfig: AssetConfig, 
 		},
 	})
 
-	local res = net.request({
-		url = `{ASSETS_BASE_URL}/assets/{assetId}?updateMask=icon`,
+	local res = fetch(`{ASSETS_BASE_URL}/assets/{assetId}?updateMask=icon`, {
 		method = "PATCH",
 		headers = {
 			["x-api-key"] = apiKey,
