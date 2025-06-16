@@ -3,25 +3,23 @@ local run = require("@root/lib/run")
 local packages = "pkg"
 
 local repos = {
-	{
-		url = "https://github.com/itsfrank/frktest",
-		rev = "317703277919695241c7e32d15122f447a28be7b",
-	},
-	{
-		url = "https://github.com/osyrisrblx/t",
-		rev = "1dbfccc182d5870cca5266dd6f3d81618f69fc29",
-	},
+	"itsfrank/frktest@31770327",
+	"osyrisrblx/t@1dbfccc1",
 }
 
 run("rm", { "-rf", packages })
 
 for _, repo in repos do
-	local projectName = repo.url:match(".+/(.+)$")
+	local parts = repo:split("@")
+	local repoPath = parts[1]
+	local rev = parts[2]
+
+	local projectName = repoPath:split("/")[2]
 	local dest = `{packages}/{projectName}`
 
-	run("git", { "clone", repo.url, dest })
+	run("git", { "clone", `https://github.com/{repoPath}`, dest })
 
-	run("git", { "reset", "--hard", repo.rev }, {
+	run("git", { "reset", "--hard", rev }, {
 		cwd = dest,
 	})
 end
