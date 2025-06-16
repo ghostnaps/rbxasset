@@ -1,7 +1,7 @@
-local net = require("@lune/net")
 local serde = require("@lune/serde")
 
 local createFormData = require("@root/requests/forms/createFormData")
+local fetch = require("@root/requests/fetch")
 local waitForOperationAsync = require("@root/requests/waitForOperationAsync")
 
 type AssetDetails = {
@@ -23,8 +23,7 @@ local function setAssetDetailsAsync(assetId: string, apiKey: string, details: As
 		},
 	})
 
-	local res = net.request({
-		url = `https://apis.roblox.com/assets/v1/assets/{assetId}?updateMask=description,displayName`,
+	local res = fetch(`https://apis.roblox.com/assets/v1/assets/{assetId}?updateMask=description,displayName`, {
 		method = "PATCH",
 		headers = {
 			["x-api-key"] = apiKey,

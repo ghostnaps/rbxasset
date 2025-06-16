@@ -1,8 +1,8 @@
 local fs = require("@lune/fs")
-local net = require("@lune/net")
 local serde = require("@lune/serde")
 
 local createFormData = require("@root/requests/forms/createFormData")
+local fetch = require("@root/requests/fetch")
 local waitForOperationAsync = require("@root/requests/waitForOperationAsync")
 
 local ASSETS_URL = "https://apis.roblox.com/assets/v1"
@@ -38,8 +38,7 @@ local function createImageAsync(
 		},
 	})
 
-	local res = net.request({
-		url = `{ASSETS_URL}/assets`,
+	local res = fetch(`{ASSETS_URL}/assets`, {
 		method = "POST",
 		headers = {
 			["x-api-key"] = apiKey,
