@@ -3,11 +3,12 @@ local serde = require("@lune/serde")
 
 local createImageAsync = require("@root/requests/createImageAsync")
 local logging = require("@root/logging")
-local maybeReadAssetManifest = require("@root/manifest/maybeReadAssetManifest")
+local maybeReadManifest = require("@root/manifest/maybeReadManifest")
 local types = require("@root/types")
-local writeAssetManifest = require("@root/manifest/writeAssetManifest")
+local writeManifest = require("@root/manifest/writeManifest")
 
 type AssetConfig = types.AssetConfig
+type EnvironmentConfig = types.EnvironmentConfig
 
 type PendingImage = {
 	path: string,
@@ -15,15 +16,18 @@ type PendingImage = {
 	assetId: string,
 }
 
-local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig, apiKey: string)
-	local assetManifest = maybeReadAssetManifest(projectPath)
+local function publishImagesAsync(
+	projectPath: string,
+	assetConfig: AssetConfig,
+	environment: EnvironmentConfig,
+	apiKey: string
+)
+	local assetManifest = maybeReadManifest(projectPath)
 	local pendingImages: { PendingImage } = {}
 
-	local existingImages = if assetManifest
-		then assetManifest.images
-		else {} :: typeof(({} :: types.AssetManifest).images)
+	local existingImages = if assetManifest then assetManifest.images else {} :: typeof(({} :: types.Manifest).images)
 
-	local icon = assetConfig.asset.icon
+	local icon = assetConfig.icon
 	if icon then
 		local iconPath = `{projectPath}/{icon}`
 
@@ -37,10 +41,10 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 			logging.info(`uploading image at {iconPath}...`)
 
 			local operation = createImageAsync(
-				`{assetConfig.asset.name} - Icon`,
+				`{assetConfig.name} - Icon`,
 				iconPath,
-				assetConfig.deployment.creatorId,
-				assetConfig.deployment.creatorType,
+				environment.creatorId,
+				environment.creatorType,
 				apiKey
 			)
 
@@ -60,7 +64,7 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 		end
 	end
 
-	local thumbnails = assetConfig.asset.thumbnails
+	local thumbnails = assetConfig.thumbnails
 	if thumbnails then
 		logging.info("syncing package thumbnails...")
 
@@ -77,10 +81,10 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 			logging.info(`uploading image at {thumbnailPath}`)
 
 			local operation = createImageAsync(
-				`{assetConfig.asset.name} - Thumbnail {index}`,
+				`{assetConfig.name} - Thumbnail {index}`,
 				thumbnailPath,
-				assetConfig.deployment.creatorId,
-				assetConfig.deployment.creatorType,
+				environment.creatorId,
+				environment.creatorType,
 				apiKey
 			)
 
@@ -115,7 +119,7 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 			)
 		end
 
-		writeAssetManifest(projectPath, newAssetManifest)
+		writeManifest(projectPath, newAssetManifest)
 	else
 		logging.debug("no new images to write to the manifest. skipping...")
 	end

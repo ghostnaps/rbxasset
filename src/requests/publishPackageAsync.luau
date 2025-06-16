@@ -3,23 +3,28 @@ local process = require("@lune/process")
 local logging = require("@root/logging")
 local publishAssetAsync = require("@root/requests/publishAssetAsync")
 local publishImagesAsync = require("@root/requests/publishImagesAsync")
-local readAssetConfig = require("@root/manifest/readAssetConfig")
+local readConfig = require("@root/manifest/readAssetConfig")
 local setAssetIconAsync = require("@root/requests/setAssetIconAsync")
-local types = require("@root/types")
 
-type AssetConfig = types.AssetConfig
+local function publishPackageAsync(projectPath: string, assetName: string, assetPath: string, apiKey: string)
+	local config = readConfig(projectPath)
 
-local function publishPackageAsync(projectPath: string, assetPath: string, apiKey: string)
-	local assetConfig = readAssetConfig(projectPath)
+	local asset = config.assets[assetName]
+	if not asset then
+		logging.err(`publishing failed, could not find an asset named {assetName} in the config`)
+		process.exit(1)
+	end
 
-	if not assetConfig.asset.distribute then
+	if not asset.distribute then
 		logging.err("refusing to publish because `distribute` is set to `false`")
 		process.exit(1)
 	end
 
-	local assetId = publishAssetAsync(projectPath, assetConfig, assetPath, apiKey)
-	publishImagesAsync(projectPath, assetConfig, apiKey)
-	setAssetIconAsync(projectPath, assetConfig, apiKey)
+	local environment = config.environments[asset.environment]
+
+	local assetId = publishAssetAsync(projectPath, asset, environment, assetPath, apiKey)
+	publishImagesAsync(projectPath, asset, environment, apiKey)
+	setAssetIconAsync(projectPath, asset, apiKey)
 
 	logging.info("package published successfully! View it on the Creator Store:")
 	logging.info(`https://create.roblox.com/store/asset/{assetId}`)

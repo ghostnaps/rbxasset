@@ -3,7 +3,7 @@ local serde = require("@lune/serde")
 local createFormData = require("@root/requests/forms/createFormData")
 local fetch = require("@root/requests/fetch")
 local logging = require("@root/logging")
-local maybeReadAssetManifest = require("@root/manifest/maybeReadAssetManifest")
+local maybeReadManifest = require("@root/manifest/maybeReadManifest")
 local types = require("@root/types")
 local waitForAssetOperationAsync = require("@root/requests/waitForAssetOperationAsync")
 
@@ -12,12 +12,12 @@ type AssetConfig = types.AssetConfig
 local ASSETS_BASE_URL = "https://apis.roblox.com/assets/v1"
 
 local function setAssetIconAsync(projectPath: string, assetConfig: AssetConfig, apiKey: string)
-	if not assetConfig.asset.icon then
+	if not assetConfig.icon then
 		logging.debug("no icon in the asset config. skipping...")
 		return
 	end
 
-	local assetManifest = maybeReadAssetManifest(projectPath)
+	local assetManifest = maybeReadManifest(projectPath)
 	if not assetManifest then
 		logging.err("asset manifest must exist before the icon can be set")
 		return
@@ -29,9 +29,9 @@ local function setAssetIconAsync(projectPath: string, assetConfig: AssetConfig, 
 		return
 	end
 
-	local iconImage = if assetManifest.images then assetManifest.images[assetConfig.asset.icon] else nil
+	local iconImage = if assetManifest.images then assetManifest.images[assetConfig.icon] else nil
 	if not iconImage then
-		logging.err(`no image found for {assetConfig.asset.icon} in the manifest`)
+		logging.err(`no image found for {assetConfig.icon} in the manifest`)
 		return
 	end
 

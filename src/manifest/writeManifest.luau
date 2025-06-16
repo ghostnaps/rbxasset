@@ -5,13 +5,13 @@ local constants = require("@root/constants")
 local logging = require("@root/logging")
 local types = require("@root/types")
 
-type AssetManifest = types.AssetManifest
+type AssetManifest = types.Manifest
 
-local function writeAssetManifest(packagePath: string, assetManifest: AssetManifest)
+local function writeManifest(packagePath: string, assetManifest: AssetManifest)
 	local assetManifestPath = `{packagePath}/{constants.ASSET_MANIFEST_FILENAME}`
 	fs.writeFile(assetManifestPath, serde.encode("toml", assetManifest))
 
 	logging.debug(`wrote asset manifest {assetManifestPath}`)
 end
 
-return writeAssetManifest
+return writeManifest

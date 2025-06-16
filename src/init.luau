@@ -1,7 +1,7 @@
 local types = require("@self/types")
 
-export type AssetConfig = types.AssetConfig
-export type AssetManifest = types.AssetManifest
+export type Config = types.Config
+export type Manifest = types.Manifest
 
 return {
 	publishPackageAsync = require("@self/requests/publishPackageAsync"),

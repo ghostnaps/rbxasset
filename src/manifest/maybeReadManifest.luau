@@ -5,13 +5,13 @@ local constants = require("@root/constants")
 local logging = require("@root/logging")
 local types = require("@root/types")
 
-type AssetManifest = types.AssetManifest
+type Manifest = types.Manifest
 
-local function maybeReadAssetManifest(packagePath: string): AssetManifest?
-	local assetManifestPath = `{packagePath}/{constants.ASSET_MANIFEST_FILENAME}`
+local function maybeReadManifest(packagePath: string): Manifest?
+	local manifestPath = `{packagePath}/{constants.ASSET_MANIFEST_FILENAME}`
 	local content: string
 	local success = pcall(function()
-		content = fs.readFile(assetManifestPath)
+		content = fs.readFile(manifestPath)
 	end)
 
 	-- It's expected that the manifest won't exist in certain situations, like
@@ -21,14 +21,14 @@ local function maybeReadAssetManifest(packagePath: string): AssetManifest?
 		return nil
 	end
 
-	logging.debug(`found asset manifest at {assetManifestPath}`)
+	logging.debug(`found asset manifest at {manifestPath}`)
 
 	local parsedContent = serde.decode("toml", content)
 
-	local isManifestValid, message = types.validateAssetManifest(parsedContent)
-	assert(isManifestValid, `failed to parse asset config at {assetManifestPath}: {message}`)
+	local isManifestValid, message = types.validateManifest(parsedContent)
+	assert(isManifestValid, `failed to parse asset config at {manifestPath}: {message}`)
 
-	return parsedContent :: AssetManifest
+	return parsedContent :: Manifest
 end
 
-return maybeReadAssetManifest
+return maybeReadManifest
