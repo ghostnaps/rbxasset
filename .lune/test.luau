@@ -1,3 +1,5 @@
+local process = require("@lune/process")
+
 local console_reporter = require("@pkg/frktest/src/reporters/console_reporter")
 local frktest = require("@pkg/frktest/src/frktest")
 local logging = require("@root/logging")
@@ -19,4 +21,6 @@ end
 loadTestCases()
 
 console_reporter.init()
-frktest.run()
+local success = frktest.run()
+
+process.exit(if success then 0 else 1)
