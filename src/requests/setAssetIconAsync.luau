@@ -35,14 +35,12 @@ local function setAssetIconAsync(projectPath: string, assetConfig: AssetConfig, 
 		return
 	end
 
-	local request = serde.encode("json", {
-		assetId = assetId,
-		icon = `assets/{iconImage.assetId}`,
-	})
-
 	local formData = createFormData({
 		request = {
-			value = request,
+			value = {
+				assetId = assetId,
+				icon = `assets/{iconImage.assetId}`,
+			},
 			contentType = "application/json",
 		},
 	})

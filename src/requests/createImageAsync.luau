@@ -14,19 +14,17 @@ local function createImageAsync(
 )
 	local creatorIdKey = if creatorType == "User" then "userId" else "groupId"
 
-	local request = serde.encode("json", {
-		assetType = "Image",
-		displayName = displayName,
-		creationContext = {
-			creator = {
-				[creatorIdKey] = creatorId,
-			},
-		},
-	})
-
 	local formData = createFormData({
 		request = {
-			value = request,
+			value = {
+				assetType = "Image",
+				displayName = displayName,
+				creationContext = {
+					creator = {
+						[creatorIdKey] = creatorId,
+					},
+				},
+			},
 			contentType = "application/json",
 		},
 		fileContent = {
