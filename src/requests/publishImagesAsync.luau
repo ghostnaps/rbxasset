@@ -110,8 +110,8 @@ local function publishImagesAsync(projectPath: string, assetConfig: AssetConfig,
 				hash = serde.hash("sha256", fs.readFile(pendingImage.path)),
 			}
 
-			print(
-				`[debug] image {pendingImage.path} uploaded successfully: https://create.roblox.com/store/asset/{pendingImage.assetId}`
+			logging.debug(
+				`image {pendingImage.path} uploaded successfully: https://create.roblox.com/store/asset/{pendingImage.assetId}`
 			)
 		end
 
