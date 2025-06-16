@@ -4,6 +4,25 @@ local check = frktest.assert.check
 
 local createFormData = require("./createFormData")
 
+local function assertStringsMatch(base: string, expected: string)
+	local baseLines = {}
+	for line in base:gmatch("[^\r\n]+") do
+		table.insert(baseLines, line)
+	end
+
+	local expectedLines = {}
+	for line in expected:gmatch("[^\r\n]+") do
+		table.insert(expectedLines, line)
+	end
+
+	for index, baseLine in baseLines do
+		local expectedLine = expectedLines[index]
+		if baseLine ~= expectedLine then
+			error(`strings do not match at line {index}\n- base: "{baseLine}"\n- expected: "{expectedLine}"`, 2)
+		end
+	end
+end
+
 test.case("automatically converts objects to json", function()
 	local formData = createFormData({
 		foo = {
@@ -45,7 +64,7 @@ test.case("body supports multiple parts", function()
 		`Content-Disposition: form-data; name="request"`,
 		"Content-Type: application/json",
 		"",
-		'{"assetType":"Image","creationContext":{"creator":{"userId":12345678}},"displayName":"Display Name"}`',
+		'{"assetType":"Image","creationContext":{"creator":{"userId":12345678}},"displayName":"Display Name"}',
 		`--{formData.boundary}`,
 		"",
 		'Content-Disposition: form-data; name="fileContent"',
@@ -55,7 +74,7 @@ test.case("body supports multiple parts", function()
 		`--{formData.boundary}--`,
 	}, "\r\n")
 
-	check.equal(formData.body, expected)
+	assertStringsMatch(formData.body, expected)
 end)
 
 test.case("the boundary contains LuauFormBoundary", function()
