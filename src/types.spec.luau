@@ -167,7 +167,12 @@ end)
 test.suite("validateManifest", function()
 	test.case("must have an assetId", function()
 		local success = types.validateManifest({
-			assetId = "123456789",
+			assets = {
+				foo = {
+					assetId = "123456789",
+				},
+			},
+			images = {},
 		})
 
 		check.is_true(success)
@@ -175,7 +180,11 @@ test.suite("validateManifest", function()
 
 	test.case("handles storing images", function()
 		local success = types.validateManifest({
-			assetId = "123456789",
+			assets = {
+				foo = {
+					assetId = "123456789",
+				},
+			},
 			images = {
 				["icon.png"] = {
 					assetId = "987654321",

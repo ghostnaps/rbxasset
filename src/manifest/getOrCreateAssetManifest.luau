@@ -2,12 +2,13 @@ local fs = require("@lune/fs")
 local serde = require("@lune/serde")
 
 local constants = require("@root/constants")
+local join = require("@root/lib/join")
 local logging = require("@root/logging")
 local types = require("@root/types")
 
 type Manifest = types.Manifest
 
-local function maybeReadManifest(packagePath: string): Manifest?
+local function getOrCreateAssetManifest(packagePath: string): Manifest
 	local manifestPath = `{packagePath}/{constants.ASSET_MANIFEST_FILENAME}`
 	local content: string
 	local success = pcall(function()
@@ -16,19 +17,19 @@ local function maybeReadManifest(packagePath: string): Manifest?
 
 	-- It's expected that the manifest won't exist in certain situations, like
 	-- on the first upload of the asset. So we just early exit here
-	if not success then
-		logging.debug("no asset manifest found")
-		return nil
-	end
 
-	logging.debug(`found asset manifest at {manifestPath}`)
+	local parsedManifest = if success then serde.decode("toml", content) else nil
+	local manifest: Manifest = join({
+		assets = {},
+		images = {},
+	}, parsedManifest)
 
-	local parsedContent = serde.decode("toml", content)
-
-	local isManifestValid, message = types.validateManifest(parsedContent)
+	local isManifestValid, message = types.validateManifest(manifest)
 	assert(isManifestValid, `failed to parse asset manifest at {manifestPath}: {message}`)
 
-	return parsedContent :: Manifest
+	logging.debug(`loaded asset manifest {manifest}`)
+
+	return manifest
 end
 
-return maybeReadManifest
+return getOrCreateAssetManifest

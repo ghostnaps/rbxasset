@@ -2,8 +2,8 @@ local fs = require("@lune/fs")
 local serde = require("@lune/serde")
 
 local createImageAsync = require("@root/requests/createImageAsync")
+local getOrCreateAssetManifest = require("@root/manifest/getOrCreateAssetManifest")
 local logging = require("@root/logging")
-local maybeReadManifest = require("@root/manifest/maybeReadManifest")
 local types = require("@root/types")
 local writeManifest = require("@root/manifest/writeManifest")
 
@@ -22,7 +22,7 @@ local function publishImagesAsync(
 	environment: EnvironmentConfig,
 	apiKey: string
 )
-	local assetManifest = maybeReadManifest(projectPath)
+	local assetManifest = getOrCreateAssetManifest(projectPath)
 	local pendingImages: { PendingImage } = {}
 
 	local existingImages = if assetManifest then assetManifest.images else {} :: typeof(({} :: types.Manifest).images)

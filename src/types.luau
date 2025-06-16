@@ -104,11 +104,11 @@ export type Manifest = {
 	assets: {
 		[string]: ManifestAsset,
 	},
-	images: { [string]: Image }?,
+	images: { [string]: Image },
 }
 types.validateManifest = t.strictInterface({
-	assets = t.optional(t.map(t.string, types.validateManifestAsset)),
-	images = t.optional(t.map(t.string, types.validateImage)),
+	assets = t.map(t.string, types.validateManifestAsset),
+	images = t.map(t.string, types.validateImage),
 })
 
 return types

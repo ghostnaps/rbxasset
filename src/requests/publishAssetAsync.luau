@@ -1,5 +1,6 @@
 local getAssetDetailsAsync = require("@root/requests/getAssetDetailsAsync")
-local maybeReadManifest = require("@root/manifest/maybeReadManifest")
+local getOrCreateAssetManifest = require("@root/manifest/getOrCreateAssetManifest")
+local join = require("@root/lib/join")
 local publishAssetTask = require("@root/tasks/publishAsset")
 local runLuauTask = require("@root/lib/runLuauTask")
 local setAssetDetailsAsync = require("@root/requests/setAssetDetailsAsync")
@@ -17,8 +18,8 @@ local function publishAssetAsync(
 	assetPath: string,
 	apiKey: string
 ): string
-	local manifest = maybeReadManifest(projectPath)
-	local existingAsset = if manifest and manifest.assets then manifest.assets[assetName] else nil
+	local manifest = getOrCreateAssetManifest(projectPath)
+	local existingAsset = manifest.assets[assetName]
 
 	-- If this assetId exists then `tasks/publishAsset` will update the asset
 	-- version. Otherwise it will create the asset for the first time
@@ -51,15 +52,13 @@ local function publishAssetAsync(
 			description = asset.description,
 		})
 
-		local newManifest = table.clone(manifest or {})
-		if existingAsset then
-			newManifest.assets[assetName].assetId = assetId
-		else
-			newManifest.assets = newManifest.assets or {}
-			newManifest.assets[assetName] = {
-				assetId = assetId,
-			}
-		end
+		local newManifest = join(manifest, {
+			assets = join(manifest.assets, {
+				[assetName] = join(manifest.assets[assetName], {
+					assetId = assetId,
+				}),
+			}),
+		})
 
 		writeManifest(projectPath, newManifest)
 	end

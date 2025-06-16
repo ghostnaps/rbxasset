@@ -2,8 +2,8 @@ local serde = require("@lune/serde")
 
 local createFormData = require("@root/requests/forms/createFormData")
 local fetch = require("@root/requests/fetch")
+local getOrCreateAssetManifest = require("@root/manifest/getOrCreateAssetManifest")
 local logging = require("@root/logging")
-local maybeReadManifest = require("@root/manifest/maybeReadManifest")
 local types = require("@root/types")
 local waitForAssetOperationAsync = require("@root/requests/waitForAssetOperationAsync")
 
@@ -17,7 +17,7 @@ local function setAssetIconAsync(projectPath: string, assetName: string, assetCo
 		return
 	end
 
-	local assetManifest = maybeReadManifest(projectPath)
+	local assetManifest = getOrCreateAssetManifest(projectPath)
 	if not assetManifest then
 		logging.err("asset manifest must exist before the icon can be set")
 		return
@@ -63,8 +63,6 @@ local function setAssetIconAsync(projectPath: string, assetName: string, assetCo
 	end
 
 	local operation = waitForAssetOperationAsync(body.operationId, apiKey)
-
-	print(serde.encode("json", operation))
 
 	if operation.error then
 		local problems = {}
