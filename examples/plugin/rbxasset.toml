@@ -6,7 +6,7 @@ type = "Plugin"
 distribute = true
 
 [deployment]
-creatorId = 1343930
-creatorType = "User"
-universeId = 7902261251
-placeId = 136954500812764
+creatorId = 35175308
+creatorType = "Group"
+universeId = 7854970752
+placeId = 119490202754966
