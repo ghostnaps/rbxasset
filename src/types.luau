@@ -59,4 +59,26 @@ types.validateAssetManifest = t.strictInterface({
 	)),
 })
 
+export type ErrorStatusResponse = {
+	code: string,
+	message: string,
+}
+
+type BaseOperationResponse = {
+	done: boolean,
+	operationId: string,
+	path: string,
+}
+
+type OperationPendingResponse = BaseOperationResponse & {
+	done: false,
+}
+
+type OperationSuccessResponse = BaseOperationResponse & {
+	done: true,
+	response: { [string]: any },
+}
+
+export type OperationResponse = OperationSuccessResponse | OperationPendingResponse | ErrorStatusResponse
+
 return types
