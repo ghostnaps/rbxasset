@@ -3,9 +3,7 @@ local serde = require("@lune/serde")
 
 local createFormData = require("@root/requests/forms/createFormData")
 local fetch = require("@root/requests/fetch")
-local waitForOperationAsync = require("@root/requests/waitForOperationAsync")
-
-local ASSETS_URL = "https://apis.roblox.com/assets/v1"
+local waitForAssetOperationAsync = require("@root/requests/waitForAssetOperationAsync")
 
 local function createImageAsync(
 	displayName: string,
@@ -38,7 +36,7 @@ local function createImageAsync(
 		},
 	})
 
-	local res = fetch(`{ASSETS_URL}/assets`, {
+	local res = fetch("https://apis.roblox.com/assets/v1/assets", {
 		method = "POST",
 		headers = {
 			["x-api-key"] = apiKey,
@@ -49,7 +47,7 @@ local function createImageAsync(
 
 	local body = serde.decode("json", res.body)
 
-	return waitForOperationAsync(body.path, apiKey, ASSETS_URL)
+	return waitForAssetOperationAsync(body.operationId, apiKey)
 end
 
 return createImageAsync

@@ -2,7 +2,7 @@ local serde = require("@lune/serde")
 
 local createFormData = require("@root/requests/forms/createFormData")
 local fetch = require("@root/requests/fetch")
-local waitForOperationAsync = require("@root/requests/waitForOperationAsync")
+local waitForAssetOperationAsync = require("@root/requests/waitForAssetOperationAsync")
 
 type AssetDetails = {
 	displayName: string,
@@ -34,7 +34,7 @@ local function setAssetDetailsAsync(assetId: string, apiKey: string, details: As
 
 	local body = serde.decode("json", res.body)
 
-	waitForOperationAsync(body.path, apiKey, "https://apis.roblox.com/assets/v1")
+	waitForAssetOperationAsync(body.operationId, apiKey)
 end
 
 return setAssetDetailsAsync
