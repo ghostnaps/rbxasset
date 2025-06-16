@@ -81,12 +81,15 @@ type Image = {
 	assetId: string,
 	hash: string,
 }
+types.validateImage = t.strictInterface({
+	assetId = t.string,
+	hash = t.string,
+})
 
-type ManifestEntry = {
+type ManifestAsset = {
 	assetId: string,
-	images: { [string]: Image }?,
 }
-types.validateManifestEntry = t.strictInterface({
+types.validateManifestAsset = t.strictInterface({
 	assetId = t.string,
 	images = t.optional(t.map(
 		t.string,
@@ -98,9 +101,14 @@ types.validateManifestEntry = t.strictInterface({
 })
 
 export type Manifest = {
-	assetId: string,
+	assets: {
+		[string]: ManifestAsset,
+	},
 	images: { [string]: Image }?,
 }
-types.validateManifest = t.map(t.string, types.validateManifestEntry)
+types.validateManifest = t.strictInterface({
+	assets = t.optional(t.map(t.string, types.validateManifestAsset)),
+	images = t.optional(t.map(t.string, types.validateImage)),
+})
 
 return types

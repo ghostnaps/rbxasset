@@ -11,7 +11,7 @@ type AssetConfig = types.AssetConfig
 
 local ASSETS_BASE_URL = "https://apis.roblox.com/assets/v1"
 
-local function setAssetIconAsync(projectPath: string, assetConfig: AssetConfig, apiKey: string)
+local function setAssetIconAsync(projectPath: string, assetName: string, assetConfig: AssetConfig, apiKey: string)
 	if not assetConfig.icon then
 		logging.debug("no icon in the asset config. skipping...")
 		return
@@ -23,7 +23,8 @@ local function setAssetIconAsync(projectPath: string, assetConfig: AssetConfig, 
 		return
 	end
 
-	local assetId = assetManifest.assetId
+	local existingAsset = if assetManifest.assets then assetManifest.assets[assetName] else nil
+	local assetId = if existingAsset then existingAsset.assetId else nil
 	if not assetId then
 		logging.err("no assetId found in the manifest. has the package been uploaded before?")
 		return
@@ -63,12 +64,14 @@ local function setAssetIconAsync(projectPath: string, assetConfig: AssetConfig, 
 
 	local operation = waitForAssetOperationAsync(body.operationId, apiKey)
 
-	if operation.message then
+	print(serde.encode("json", operation))
+
+	if operation.error then
 		local problems = {}
 		for _, err in operation.metadata.errors do
 			table.insert(problems, err.error.message)
 		end
-		logging.err(`failed to set asset icon: {table.concat(problems, ", ")}`)
+		logging.warn(`failed to set asset icon: {table.concat(problems, ", ")}`)
 		return
 	end
 

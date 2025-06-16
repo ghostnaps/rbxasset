@@ -11,17 +11,18 @@ type EnvironmentConfig = types.EnvironmentConfig
 
 local function publishAssetAsync(
 	projectPath: string,
+	assetName: string,
 	asset: AssetConfig,
 	environment: EnvironmentConfig,
 	assetPath: string,
 	apiKey: string
 ): string
-	local assetManifest = maybeReadManifest(projectPath)
+	local manifest = maybeReadManifest(projectPath)
+	local existingAsset = if manifest and manifest.assets then manifest.assets[assetName] else nil
 
-	-- If this assetId exists then `publish-asset` will update the asset
+	-- If this assetId exists then `tasks/publishAsset` will update the asset
 	-- version. Otherwise it will create the asset for the first time
-	local existingAssetId = if assetManifest then assetManifest.assetId else nil
-
+	local existingAssetId = if existingAsset then existingAsset.assetId else nil
 	local assetDetails = if existingAssetId then getAssetDetailsAsync(existingAssetId, apiKey) else nil
 
 	local output = runLuauTask(publishAssetTask, {
@@ -50,10 +51,17 @@ local function publishAssetAsync(
 			description = asset.description,
 		})
 
-		local newAssetManifest = table.clone(assetManifest or {})
-		newAssetManifest.assetId = assetId
+		local newManifest = table.clone(manifest or {})
+		if existingAsset then
+			newManifest.assets[assetName].assetId = assetId
+		else
+			newManifest.assets = newManifest.assets or {}
+			newManifest.assets[assetName] = {
+				assetId = assetId,
+			}
+		end
 
-		writeManifest(projectPath, newAssetManifest)
+		writeManifest(projectPath, newManifest)
 	end
 
 	return assetId

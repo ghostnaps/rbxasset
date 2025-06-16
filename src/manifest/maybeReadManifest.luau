@@ -26,7 +26,7 @@ local function maybeReadManifest(packagePath: string): Manifest?
 	local parsedContent = serde.decode("toml", content)
 
 	local isManifestValid, message = types.validateManifest(parsedContent)
-	assert(isManifestValid, `failed to parse asset config at {manifestPath}: {message}`)
+	assert(isManifestValid, `failed to parse asset manifest at {manifestPath}: {message}`)
 
 	return parsedContent :: Manifest
 end

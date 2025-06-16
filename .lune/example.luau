@@ -22,4 +22,4 @@ local result = process.exec("rojo", {
 assert(result.ok, `process completed with non-zero exit code {result.stderr}`)
 logging.info(`built project to {assetPath}`)
 
-rbxasset.publishPackageAsync(projectPath, assetPath, apiKey)
+rbxasset.publishPackageAsync(projectPath, "package", assetPath, apiKey)

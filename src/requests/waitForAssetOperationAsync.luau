@@ -6,15 +6,41 @@ local fetch = require("@root/requests/fetch")
 local MAX_RETRIES = 5
 local RETRY_MULTIPLIER = 2
 
-type OperationResponse = {
-	done: boolean,
+type OperationPendingResponse = {
+	done: false,
+	operationId: string,
+	path: string,
+}
+
+type ErrorResponse = {
+	code: string,
+	details: { string }?,
+	message: string,
+}
+
+type OperationFailedResponse = {
+	done: true,
+	error: ErrorResponse,
+	metadata: {
+		errors: {
+			{
+				error: ErrorResponse,
+				fieldMask: { [string]: any },
+			}
+		},
+	},
+	operationId: string,
+	path: string,
+}
+
+type OperationSucceededResponse = {
+	done: true,
 	operationId: string,
 	path: string,
 	response: { [string]: any },
-} | {
-	code: string,
-	message: string,
 }
+
+type OperationResponse = OperationSucceededResponse | OperationFailedResponse | ErrorResponse
 
 local function waitForAssetOperationAsync(operationId: string, apiKey: string): OperationResponse
 	local currentRetries = 0
