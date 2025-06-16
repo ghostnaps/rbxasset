@@ -10,13 +10,15 @@ local function createFormDataBody(boundary: string, data: { [string]: FormField 
 	local body = {}
 
 	for key, field in data do
+		local value = if field.contentType == "application/json" then serde.encode("json", field.value) else field.value
+
 		local lines = {
 			`--{boundary}`,
 			`Content-Disposition: form-data; name="{key}"`
 				.. if field.filename then `; filename="{field.filename}"` else "",
 			`Content-Type: {field.contentType}`,
 			"",
-			field.value,
+			value,
 		}
 
 		table.insert(body, table.concat(lines, "\r\n"))
