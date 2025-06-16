@@ -5,7 +5,7 @@ local createFormData = require("@root/requests/forms/createFormData")
 local logging = require("@root/logging")
 local maybeReadAssetManifest = require("@root/manifest/maybeReadAssetManifest")
 local types = require("@root/types")
-local waitForOperationAsync = require("@root/requests/waitForOperationAsync")
+local waitForAssetOperationAsync = require("@root/requests/waitForAssetOperationAsync")
 
 type AssetConfig = types.AssetConfig
 
@@ -57,18 +57,18 @@ local function setAssetIconAsync(projectPath: string, assetConfig: AssetConfig, 
 		body = formData.body,
 	})
 
-	local operation = serde.decode("json", res.body)
+	local body = serde.decode("json", res.body)
 
-	if not operation.path then
+	if not body.operationId then
 		logging.err(`failed to set asset icon`)
 		return
 	end
 
-	local body = waitForOperationAsync(operation.path, apiKey, ASSETS_BASE_URL)
+	local operation = waitForAssetOperationAsync(body.operationId, apiKey)
 
-	if body.error then
+	if operation.message then
 		local problems = {}
-		for _, err in body.metadata.errors do
+		for _, err in operation.metadata.errors do
 			table.insert(problems, err.error.message)
 		end
 		logging.err(`failed to set asset icon: {table.concat(problems, ", ")}`)
