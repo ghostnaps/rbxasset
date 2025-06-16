@@ -3,7 +3,6 @@ local task = require("@lune/task")
 
 local fetch = require("@root/requests/fetch")
 
-local CLOUD_OPERATIONS_BASE_URL = `https://apis.roblox.com/cloud/v2`
 local MAX_RETRIES = 5
 local RETRY_MULTIPLIER = 2
 
@@ -13,18 +12,16 @@ type OperationResponse = {
 	path: string,
 	response: { [string]: any },
 } | {
-	error: string,
-	code: number,
+	code: string,
+	message: string,
 }
 
-local function waitForOperationAsync(operationPath: string, apiKey: string, baseUrl: string?): OperationResponse
+local function waitForAssetOperationAsync(operationId: string, apiKey: string): OperationResponse
 	local currentRetries = 0
 	local retryPollingDelay = 1
 
-	local operationsBaseUrl = if baseUrl then baseUrl else CLOUD_OPERATIONS_BASE_URL
-
 	while currentRetries < MAX_RETRIES do
-		local res = fetch(`{operationsBaseUrl}/{operationPath}`, {
+		local res = fetch(`https://apis.roblox.com/assets/v1/operations/{operationId}`, {
 			method = "GET",
 			headers = {
 				["x-api-key"] = apiKey,
@@ -40,7 +37,7 @@ local function waitForOperationAsync(operationPath: string, apiKey: string, base
 			retryPollingDelay *= RETRY_MULTIPLIER
 		end
 	end
-	error(`operation "{operationPath}" did not complete within {MAX_RETRIES} attempts`)
+	error(`operation "{operationId}" did not complete within {MAX_RETRIES} attempts`)
 end
 
-return waitForOperationAsync
+return waitForAssetOperationAsync

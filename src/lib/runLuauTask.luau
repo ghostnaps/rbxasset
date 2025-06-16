@@ -58,7 +58,7 @@ local function runLuauTask(
 
 	run("rojo", { "build", ROJO_PROJECT_PATH, "-o", BUILD_PATH })
 
-	print("[info] substituting globals", globals)
+	logging.info("substituting globals", globals)
 
 	for global, value in globals do
 		run("sed", { "-i", "-e", `'s/= _G.{global}/= "{value}"/g'`, TASK_PATH })
