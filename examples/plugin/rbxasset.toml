@@ -1,0 +1,12 @@
+[asset]
+name = "Example Plugin"
+description = "Longform description"
+icon = "icon.png"
+type = "Plugin"
+distribute = true
+
+[deployment]
+creatorId = 1343930
+creatorType = "User"
+universeId = 7902261251
+placeId = 136954500812764

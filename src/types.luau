@@ -2,17 +2,21 @@ local t = require("@pkg/t/lib")
 
 local types = {}
 
+export type AssetType = "Package" | "Plugin"
+export type CreatorType = "User" | "Group"
 export type AssetConfig = {
 	asset: {
 		name: string,
+
 		description: string?,
+		distribute: boolean?,
 		icon: string?,
 		thumbnails: { string }?,
-		distribute: boolean?,
+		type: AssetType,
 	},
 	deployment: {
 		creatorId: number,
-		creatorType: "User" | "Group",
+		creatorType: CreatorType,
 		universeId: number,
 		placeId: number,
 	},
@@ -20,10 +24,12 @@ export type AssetConfig = {
 types.validateAssetConfig = t.strictInterface({
 	asset = t.strictInterface({
 		name = t.string,
-		icon = t.optional(t.string),
+
 		description = t.optional(t.string),
-		thumbnails = t.optional(t.array(t.string)),
 		distribute = t.optional(t.boolean),
+		icon = t.optional(t.string),
+		thumbnails = t.optional(t.array(t.string)),
+		type = t.optional(t.union(t.literal("Package"), t.literal("Plugin"))),
 	}),
 	deployment = t.strictInterface({
 		creatorId = t.union(t.string, t.number),
