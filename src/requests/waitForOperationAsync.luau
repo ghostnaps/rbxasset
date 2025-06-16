@@ -1,6 +1,7 @@
-local net = require("@lune/net")
 local serde = require("@lune/serde")
 local task = require("@lune/task")
+
+local fetch = require("@root/requests/fetch")
 
 local CLOUD_OPERATIONS_BASE_URL = `https://apis.roblox.com/cloud/v2`
 local MAX_RETRIES = 5
@@ -11,6 +12,9 @@ type OperationResponse = {
 	operationId: string,
 	path: string,
 	response: { [string]: any },
+} | {
+	error: string,
+	code: number,
 }
 
 local function waitForOperationAsync(operationPath: string, apiKey: string, baseUrl: string?): OperationResponse
@@ -20,9 +24,8 @@ local function waitForOperationAsync(operationPath: string, apiKey: string, base
 	local operationsBaseUrl = if baseUrl then baseUrl else CLOUD_OPERATIONS_BASE_URL
 
 	while currentRetries < MAX_RETRIES do
-		local res = net.request({
+		local res = fetch(`{operationsBaseUrl}/{operationPath}`, {
 			method = "GET",
-			url = `{operationsBaseUrl}/{operationPath}`,
 			headers = {
 				["x-api-key"] = apiKey,
 			},
