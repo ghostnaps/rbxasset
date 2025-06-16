@@ -56,11 +56,7 @@ local function setAssetIconAsync(projectPath: string, assetConfig: AssetConfig, 
 		body = formData.body,
 	})
 
-	print("body", res.body)
-
 	local operation = serde.decode("json", res.body)
-
-	print("operation", operation)
 
 	if not operation.path then
 		logging.err(`failed to set asset icon`)
