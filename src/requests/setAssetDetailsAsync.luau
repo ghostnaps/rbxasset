@@ -10,15 +10,13 @@ type AssetDetails = {
 }
 
 local function setAssetDetailsAsync(assetId: string, apiKey: string, details: AssetDetails)
-	local request = serde.encode("json", {
-		assetId = assetId,
-		displayName = details.displayName,
-		description = details.description,
-	})
-
 	local formData = createFormData({
 		request = {
-			value = request,
+			value = {
+				assetId = assetId,
+				displayName = details.displayName,
+				description = details.description,
+			},
 			contentType = "application/json",
 		},
 	})
