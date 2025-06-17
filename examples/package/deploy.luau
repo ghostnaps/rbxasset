@@ -9,4 +9,4 @@ assert(process.cwd:match("examples/package"), "you must be in the `examples/pack
 
 process.exec("rojo", { "build", "-o", "asset.rbxm" })
 
-rbxasset.publishPackageAsync(process.cwd, "package", apiKey)
+rbxasset.publishPackageAsync(process.cwd, "asset.rbxm", apiKey)

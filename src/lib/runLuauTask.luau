@@ -1,4 +1,5 @@
 local fs = require("@lune/fs")
+local roblox = require("@lune/roblox")
 local serde = require("@lune/serde")
 
 local executeLuauTask = require("@root/cloud/executeLuauTask")
@@ -6,8 +7,25 @@ local logging = require("@root/logging")
 local run = require("@root/lib/run")
 
 local TEMP_DIR = "temp"
-local ROJO_PROJECT_PATH = `{TEMP_DIR}/default.project.json`
-local BUILD_PATH = `{TEMP_DIR}/build.rbxl`
+
+local function buildLuauExecutionRobloxPlace(outputPath: string): string
+	local rojoProjectPath = `{outputPath}/default.project.json`
+	local placePath = `{outputPath}/build.rbxl`
+
+	logging.info("creating Rojo project")
+	local rojoProject = {
+		name = "LuauExecutionPlace",
+		tree = {
+			["$className"] = "DataModel",
+		},
+	}
+
+	fs.writeFile(rojoProjectPath, serde.encode("json", rojoProject))
+
+	run("rojo", { "build", rojoProjectPath, "-o", placePath })
+
+	return placePath
+end
 
 local function runLuauTask(
 	scriptContent: string,
@@ -23,28 +41,21 @@ local function runLuauTask(
 )
 	run("rm", { "-rf", TEMP_DIR })
 
-	if not fs.isDir("temp") then
-		fs.writeDir("temp")
+	if not fs.isDir(TEMP_DIR) then
+		fs.writeDir(TEMP_DIR)
 	end
 
-	logging.info("creating Rojo project")
-	local rojoProject = {
-		name = "Build",
-		tree = {
-			["$className"] = "DataModel",
-			ReplicatedStorage = {
-				Build = if runnerContext.modelPath
-					then {
-						-- TODO: Find a better way to reference the path to the asset
-						["$path"] = `../{runnerContext.modelPath}`,
-					}
-					else nil,
-			},
-		},
-	}
-	fs.writeFile(ROJO_PROJECT_PATH, serde.encode("json", rojoProject))
+	local placePath = buildLuauExecutionRobloxPlace(TEMP_DIR)
 
-	run("rojo", { "build", ROJO_PROJECT_PATH, "-o", BUILD_PATH })
+	if runnerContext.modelPath then
+		local game = roblox.deserializePlace(fs.readFile(placePath))
+		local root = roblox.deserializeModel(fs.readFile(runnerContext.modelPath))
+		for _, child in root do
+			child.Parent = game:GetService("ReplicatedStorage")
+			logging.debug(`parented {child} to ReplicatedStorage`)
+		end
+		fs.writeFile(placePath, roblox.serializePlace(game))
+	end
 
 	logging.info("substituting globals", globals)
 
@@ -52,13 +63,8 @@ local function runLuauTask(
 		scriptContent = scriptContent:gsub(`= _G.{global}`, `= "{value}"`)
 	end
 
-	local variables = executeLuauTask(
-		BUILD_PATH,
-		scriptContent,
-		runnerContext.universeId,
-		runnerContext.placeId,
-		runnerContext.apiKey
-	)
+	local variables =
+		executeLuauTask(placePath, scriptContent, runnerContext.universeId, runnerContext.placeId, runnerContext.apiKey)
 
 	run("rm", { "-rf", TEMP_DIR })
 
