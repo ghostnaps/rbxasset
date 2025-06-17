@@ -42,6 +42,7 @@ types.validateAssetConfig = t.strictInterface({
 	model = t.string,
 	environment = t.string,
 
+	type = t.optional(t.union(t.literal("Package"), t.literal("Plugin"))),
 	description = t.optional(t.string),
 	icon = t.optional(t.string),
 	thumbnails = t.optional(t.array(t.string)),
