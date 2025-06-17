@@ -2,55 +2,113 @@ local t = require("@pkg/t/lib")
 
 local types = {}
 
+local function countObject(obj: { [any]: any }): number
+	local count = 0
+	for _ in obj do
+		count += 1
+	end
+	return count
+end
+
 export type AssetType = "Package" | "Plugin"
 export type CreatorType = "User" | "Group"
 export type AssetId = string | number
 
 export type AssetConfig = {
-	asset: {
-		name: string,
+	-- Name of the asset that will be displayed on the Creator Store
+	name: string,
 
-		description: string?,
-		distribute: boolean?,
-		icon: string?,
-		thumbnails: { string }?,
-		type: AssetType,
-	},
-	deployment: {
-		creatorId: number,
-		creatorType: CreatorType,
-		universeId: number,
-		placeId: number,
-	},
+	-- Path of the rbxm file to upload
+	model: string,
+
+	-- The environment to deploy to. For example, if `[environments.production]`
+	-- is specified in `rbxasset.toml`, then this value should be "production"
+	environment: string,
+
+	type: AssetType?,
+
+	-- Description of the asset on the Creator Store
+	description: string?,
+
+	-- Path to the image to use for the asset's icon on the Creator Store. This
+	-- must be a png.
+	icon: string?,
+
+	-- Paths to images to use for the asset's previews on the Creator Store.
+	thumbnails: { string }?,
 }
 types.validateAssetConfig = t.strictInterface({
-	asset = t.strictInterface({
-		name = t.string,
+	name = t.string,
+	model = t.string,
+	environment = t.string,
 
-		description = t.optional(t.string),
-		distribute = t.optional(t.boolean),
-		icon = t.optional(t.string),
-		thumbnails = t.optional(t.array(t.string)),
-		type = t.optional(t.union(t.literal("Package"), t.literal("Plugin"))),
-	}),
-	deployment = t.strictInterface({
-		creatorId = t.union(t.string, t.number),
-		creatorType = t.union(t.literal("User"), t.literal("Group")),
-		universeId = t.number,
-		placeId = t.number,
-	}),
+	type = t.optional(t.union(t.literal("Package"), t.literal("Plugin"))),
+	description = t.optional(t.string),
+	icon = t.optional(t.string),
+	thumbnails = t.optional(t.array(t.string)),
 })
+
+export type EnvironmentConfig = {
+	creatorId: number,
+	creatorType: "User" | "Group",
+	universeId: number,
+	placeId: number,
+}
+types.validateEnvironmentConfig = t.strictInterface({
+	creatorId = t.union(t.string, t.number),
+	creatorType = t.union(t.literal("User"), t.literal("Group")),
+	universeId = t.number,
+	placeId = t.number,
+})
+
+export type Config = {
+	assets: {
+		[string]: AssetConfig,
+	},
+	environments: {
+		[string]: EnvironmentConfig,
+	},
+}
+types.validateConfig = function(value: any): (boolean, string?)
+	local success, message = t.strictInterface({
+		assets = t.map(t.string, types.validateAssetConfig),
+		environments = t.map(t.string, types.validateEnvironmentConfig),
+	})(value)
+
+	if not success then
+		return success, message
+	end
+
+	if typeof(value.assets) == "table" and countObject(value.assets) == 0 then
+		return false, "at least one asset must be defined in the config"
+	end
+
+	if typeof(value.environments) == "table" and countObject(value.environments) == 0 then
+		return false, "at least one environment must be defined in the config"
+	end
+
+	for key, asset in value.assets do
+		if not value.environments[asset.environment] then
+			return false, `asset "{key}" attempts to use the environment "{asset.environment}" which does not exist`
+		end
+	end
+
+	return true, nil
+end
 
 type Image = {
 	assetId: string,
 	hash: string,
 }
+types.validateImage = t.strictInterface({
+	assetId = t.string,
+	hash = t.string,
+})
 
-export type AssetManifest = {
+type ManifestAsset = {
 	assetId: string,
-	images: { [string]: Image }?,
 }
-types.validateAssetManifest = t.strictInterface({
+types.validateManifestAsset = t.strictInterface({
 	assetId = t.string,
 	images = t.optional(t.map(
 		t.string,
@@ -61,26 +119,60 @@ types.validateAssetManifest = t.strictInterface({
 	)),
 })
 
+export type Manifest = {
+	assets: {
+		[string]: ManifestAsset,
+	},
+	images: { [string]: Image },
+}
+types.validateManifest = t.strictInterface({
+	assets = t.map(t.string, types.validateManifestAsset),
+	images = t.map(t.string, types.validateImage),
+})
+
 export type ErrorStatusResponse = {
 	code: string,
 	message: string,
 }
 
-type BaseOperationResponse = {
-	done: boolean,
+type OperationPendingResponse = {
+	done: false,
 	operationId: string,
 	path: string,
 }
 
-type OperationPendingResponse = BaseOperationResponse & {
-	done: false,
+type ErrorResponse = {
+	code: string,
+	details: { string }?,
+	message: string,
 }
 
-type OperationSuccessResponse = BaseOperationResponse & {
+type OperationFailedResponse = {
 	done: true,
+	error: ErrorResponse,
+	metadata: {
+		errors: {
+			{
+				error: ErrorResponse,
+				fieldMask: { [string]: any },
+			}
+		},
+	},
+	operationId: string,
+	path: string,
+}
+
+type OperationSucceededResponse = {
+	done: true,
+	operationId: string,
+	path: string,
 	response: { [string]: any },
 }
 
-export type OperationResponse = OperationSuccessResponse | OperationPendingResponse | ErrorStatusResponse
+export type OperationResponse =
+	OperationSucceededResponse
+	| OperationFailedResponse
+	| OperationPendingResponse
+	| ErrorStatusResponse
 
 return types

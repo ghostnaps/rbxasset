@@ -1,11 +1,12 @@
-[asset]
+[assets.plugin]
 name = "Example Plugin"
+model = "plugin.rbxm"
+environment = "production"
 description = "Longform description"
 icon = "icon.png"
 type = "Plugin"
-distribute = true
 
-[deployment]
+[environments.production]
 creatorId = 35175308
 creatorType = "Group"
 universeId = 7854970752

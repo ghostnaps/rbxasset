@@ -1,0 +1,6 @@
+{
+  "name": "WorkspacePlugin",
+  "tree": {
+    "$path": "src"
+  }
+}

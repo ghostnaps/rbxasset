@@ -1,10 +1,11 @@
-[asset]
+[assets.package]
 name = "Display Name"
+environment = "production"
 description = "Longform description"
 icon = "icon.png"
-distribute = true
+model = "asset.rbxm"
 
-[deployment]
+[environments.production]
 creatorId = 35175308
 creatorType = "Group"
 universeId = 7854970752

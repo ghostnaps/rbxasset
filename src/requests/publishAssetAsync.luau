@@ -1,40 +1,43 @@
 local getAssetDetailsAsync = require("@root/requests/getAssetDetailsAsync")
-local maybeReadAssetManifest = require("@root/manifest/maybeReadAssetManifest")
+local getOrCreateAssetManifest = require("@root/manifest/getOrCreateAssetManifest")
+local join = require("@root/lib/join")
 local publishAssetTask = require("@root/tasks/publishAsset")
 local runLuauTask = require("@root/lib/runLuauTask")
 local setAssetDetailsAsync = require("@root/requests/setAssetDetailsAsync")
 local types = require("@root/types")
-local writeAssetManifest = require("@root/manifest/writeAssetManifest")
+local writeManifest = require("@root/manifest/writeManifest")
 
 type AssetConfig = types.AssetConfig
+type EnvironmentConfig = types.EnvironmentConfig
 
 local function publishAssetAsync(
 	projectPath: string,
-	assetConfig: AssetConfig,
-	assetPath: string,
+	assetName: string,
+	asset: AssetConfig,
+	environment: EnvironmentConfig,
 	apiKey: string
 ): string?
-	local assetManifest = maybeReadAssetManifest(projectPath)
+	local manifest = getOrCreateAssetManifest(projectPath)
+	local existingAsset = manifest.assets[assetName]
 
-	-- If this assetId exists then `publish-asset` will update the asset
+	-- If this assetId exists then `tasks/publishAsset` will update the asset
 	-- version. Otherwise it will create the asset for the first time
-	local existingAssetId = if assetManifest then assetManifest.assetId else nil
-
+	local existingAssetId = if existingAsset then existingAsset.assetId else nil
 	local assetDetails = if existingAssetId then getAssetDetailsAsync(existingAssetId, apiKey) else nil
 
 	local variables = runLuauTask(publishAssetTask, {
-		CREATOR_ID = assetConfig.deployment.creatorId,
-		CREATOR_TYPE = assetConfig.deployment.creatorType,
-		ASSET_TYPE = assetConfig.asset.type or "Package",
+		CREATOR_ID = environment.creatorId,
+		CREATOR_TYPE = environment.creatorType,
+		ASSET_TYPE = asset.type or "Package",
 
 		-- Only provide the assetId from the manifest if there's a matching
 		-- asset on the Creator Store. We need this check in case the manifest
 		-- is edited manually to a nonexistent id
 		ASSET_ID = if assetDetails and assetDetails.assetId then existingAssetId else nil :: any,
 	}, {
-		universeId = assetConfig.deployment.universeId,
-		placeId = assetConfig.deployment.placeId,
-		modelPath = assetPath,
+		universeId = environment.universeId,
+		placeId = environment.placeId,
+		modelPath = asset.model,
 		apiKey = apiKey,
 	})
 
@@ -45,14 +48,19 @@ local function publishAssetAsync(
 		-- don't actually update the asset's name/description, so we need to
 		-- handle that manually.
 		setAssetDetailsAsync(assetId, apiKey, {
-			displayName = assetConfig.asset.name,
-			description = assetConfig.asset.description,
+			displayName = asset.name,
+			description = asset.description,
 		})
 
-		local newAssetManifest = table.clone(assetManifest or {})
-		newAssetManifest.assetId = assetId
+		local newManifest = join(manifest, {
+			assets = join(manifest.assets, {
+				[assetName] = join(manifest.assets[assetName], {
+					assetId = assetId,
+				}),
+			}),
+		})
 
-		writeAssetManifest(projectPath, newAssetManifest)
+		writeManifest(projectPath, newManifest)
 	end
 
 	return assetId

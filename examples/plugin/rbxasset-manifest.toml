@@ -1,5 +1,4 @@
-assetId = "104757825775127"
+[assets.plugin]
+assetId = "136176915775390"
 
-[images."icon.png"]
-assetId = "124561703176693"
-hash = "fac185770cf5e824d4c0a9b59e547df42dc10011c5ad139bfc2c7e1507eef631"
+[images]

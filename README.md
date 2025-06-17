@@ -13,13 +13,14 @@ $ git clone https://github.com/ghostnaps/rbxasset.git
 Create an `rbxasset.toml` file in your project with the following content:
 
 ```toml
-[asset]
+[assets.default]
 name = "Display Name"
+model = "build.rbxm"
+environment = "production"
 description = "Longform project description"
 icon = "img/icon.png"
-distribute = true
 
-[deployment]
+[environments.production]
 creatorId = 35175308
 creatorType = "Group"
 universeId = 7854970752
@@ -27,10 +28,10 @@ placeId = 119490202754966
 ```
 
 To get deployment to work properly, the following are required:
-* `creatorId`: The ID of the User or Group that will own the published asset
+* `creatorId`: The ID of the User or Group that will own the published assets
 * `creatorType`: Either `"User"` or `"Group"`. This is just to tell rbxasset how to interpret `creatorId`
-* `universeId`: The `game.GameId` of an experience that will be used for Luau Execution. The experience must be owned by the same Creator
-* `placeId`: The `game.PlaceId` of an experience that will be used for Luau Execution
+* `universeId`: The `game.GameId` of an experience that will be used for Luau Execution. The experience must be owned by the asset creator
+* `placeId`: The `game.PlaceId` of an experience that will be used for Luau Execution. The experience must be owned by the asset creator
 
 ## API Key
 
