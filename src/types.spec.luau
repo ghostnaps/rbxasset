@@ -11,6 +11,7 @@ test.suite("validateConfig", function()
 				main = {
 					name = "Asset Name",
 					environment = "production",
+					model = "asset.rbxm",
 				},
 			},
 			environments = {
@@ -32,6 +33,7 @@ test.suite("validateConfig", function()
 				main = {
 					name = "Asset Name",
 					environment = "production",
+					model = "asset.rbxm",
 					description = "Asset description",
 					icon = "icon.png",
 					thumbnails = { "thumbnails/1.png" },
@@ -76,6 +78,7 @@ test.suite("validateConfig", function()
 					icon = "icon.png",
 					thumbnails = { "thumbnails/1.png" },
 					environment = "does-not-exist",
+					model = "asset.rbxm",
 				},
 			},
 			environments = {},
@@ -94,6 +97,7 @@ test.suite("validateConfig", function()
 					icon = "icon.png",
 					thumbnails = { "thumbnails/1.png" },
 					environment = "does-not-exist",
+					model = "asset.rbxm",
 				},
 			},
 			environments = {
@@ -116,6 +120,7 @@ test.suite("validateConfig", function()
 				main = {
 					name = "Asset Name",
 					environment = "production",
+					model = "asset.rbxm",
 					description = 123456789,
 					icon = false,
 				},
@@ -145,6 +150,7 @@ test.suite("validateConfig", function()
 				main = {
 					name = false,
 					environment = "production",
+					model = "asset.rbxm",
 				},
 			},
 			environments = {
