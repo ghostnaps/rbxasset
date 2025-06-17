@@ -16,7 +16,7 @@ local function publishAssetAsync(
 	asset: AssetConfig,
 	environment: EnvironmentConfig,
 	apiKey: string
-): string
+): string?
 	local manifest = getOrCreateAssetManifest(projectPath)
 	local existingAsset = manifest.assets[assetName]
 
@@ -25,7 +25,7 @@ local function publishAssetAsync(
 	local existingAssetId = if existingAsset then existingAsset.assetId else nil
 	local assetDetails = if existingAssetId then getAssetDetailsAsync(existingAssetId, apiKey) else nil
 
-	local output = runLuauTask(publishAssetTask, {
+	local variables = runLuauTask(publishAssetTask, {
 		CREATOR_ID = environment.creatorId,
 		CREATOR_TYPE = environment.creatorType,
 
@@ -40,7 +40,7 @@ local function publishAssetAsync(
 		apiKey = apiKey,
 	})
 
-	local assetId = output.ASSET_ID
+	local assetId = if variables then variables.ASSET_ID else nil
 
 	if assetId then
 		-- CreateAssetAsync and CreateAssetVersionAsync in the Luau task

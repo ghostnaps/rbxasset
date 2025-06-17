@@ -10,6 +10,8 @@ local function countObject(obj: { [any]: any }): number
 	return count
 end
 
+export type AssetId = string | number
+
 export type AssetConfig = {
 	-- Name of the asset that will be displayed on the Creator Store
 	name: string,
