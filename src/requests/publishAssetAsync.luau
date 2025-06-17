@@ -13,7 +13,7 @@ local function publishAssetAsync(
 	assetConfig: AssetConfig,
 	assetPath: string,
 	apiKey: string
-): string
+): string?
 	local assetManifest = maybeReadAssetManifest(projectPath)
 
 	-- If this assetId exists then `publish-asset` will update the asset
@@ -22,7 +22,7 @@ local function publishAssetAsync(
 
 	local assetDetails = if existingAssetId then getAssetDetailsAsync(existingAssetId, apiKey) else nil
 
-	local output = runLuauTask(publishAssetTask, {
+	local variables = runLuauTask(publishAssetTask, {
 		CREATOR_ID = assetConfig.deployment.creatorId,
 		CREATOR_TYPE = assetConfig.deployment.creatorType,
 		ASSET_TYPE = assetConfig.asset.type or "Package",
@@ -38,7 +38,7 @@ local function publishAssetAsync(
 		apiKey = apiKey,
 	})
 
-	local assetId = output.ASSET_ID
+	local assetId = if variables then variables.ASSET_ID else nil
 
 	if assetId then
 		-- CreateAssetAsync and CreateAssetVersionAsync in the Luau task

@@ -4,6 +4,8 @@ local types = {}
 
 export type AssetType = "Package" | "Plugin"
 export type CreatorType = "User" | "Group"
+export type AssetId = string | number
+
 export type AssetConfig = {
 	asset: {
 		name: string,
