@@ -2,7 +2,10 @@ local serde = require("@lune/serde")
 
 local createFormData = require("@root/requests/forms/createFormData")
 local fetch = require("@root/requests/fetch")
+local types = require("@root/types")
 local waitForAssetOperationAsync = require("@root/requests/waitForAssetOperationAsync")
+
+type OperationResponse = types.OperationResponse
 
 type AssetDetails = {
 	displayName: string,
@@ -30,9 +33,13 @@ local function setAssetDetailsAsync(assetId: string, apiKey: string, details: As
 		body = formData.body,
 	})
 
-	local body = serde.decode("json", res.body)
+	local body: OperationResponse = serde.decode("json", res.body)
 
-	waitForAssetOperationAsync(body.operationId, apiKey)
+	if body.message then
+		error(body.message)
+	else
+		waitForAssetOperationAsync(body.operationId, apiKey)
+	end
 end
 
 return setAssetDetailsAsync

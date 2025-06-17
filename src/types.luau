@@ -10,6 +10,8 @@ local function countObject(obj: { [any]: any }): number
 	return count
 end
 
+export type AssetType = "Package" | "Plugin"
+export type CreatorType = "User" | "Group"
 export type AssetId = string | number
 
 export type AssetConfig = {
@@ -22,6 +24,8 @@ export type AssetConfig = {
 	-- The environment to deploy to. For example, if `[environments.production]`
 	-- is specified in `rbxasset.toml`, then this value should be "production"
 	environment: string,
+
+	type: AssetType?,
 
 	-- Description of the asset on the Creator Store
 	description: string?,
@@ -124,5 +128,50 @@ types.validateManifest = t.strictInterface({
 	assets = t.map(t.string, types.validateManifestAsset),
 	images = t.map(t.string, types.validateImage),
 })
+
+export type ErrorStatusResponse = {
+	code: string,
+	message: string,
+}
+
+type OperationPendingResponse = {
+	done: false,
+	operationId: string,
+	path: string,
+}
+
+type ErrorResponse = {
+	code: string,
+	details: { string }?,
+	message: string,
+}
+
+type OperationFailedResponse = {
+	done: true,
+	error: ErrorResponse,
+	metadata: {
+		errors: {
+			{
+				error: ErrorResponse,
+				fieldMask: { [string]: any },
+			}
+		},
+	},
+	operationId: string,
+	path: string,
+}
+
+type OperationSucceededResponse = {
+	done: true,
+	operationId: string,
+	path: string,
+	response: { [string]: any },
+}
+
+export type OperationResponse =
+	OperationSucceededResponse
+	| OperationFailedResponse
+	| OperationPendingResponse
+	| ErrorStatusResponse
 
 return types

@@ -28,6 +28,7 @@ local function publishAssetAsync(
 	local variables = runLuauTask(publishAssetTask, {
 		CREATOR_ID = environment.creatorId,
 		CREATOR_TYPE = environment.creatorType,
+		ASSET_TYPE = asset.type or "Package",
 
 		-- Only provide the assetId from the manifest if there's a matching
 		-- asset on the Creator Store. We need this check in case the manifest

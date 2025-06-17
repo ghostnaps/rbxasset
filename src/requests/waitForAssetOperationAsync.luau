@@ -2,45 +2,12 @@ local serde = require("@lune/serde")
 local task = require("@lune/task")
 
 local fetch = require("@root/requests/fetch")
+local types = require("@root/types")
 
 local MAX_RETRIES = 5
 local RETRY_MULTIPLIER = 2
 
-type OperationPendingResponse = {
-	done: false,
-	operationId: string,
-	path: string,
-}
-
-type ErrorResponse = {
-	code: string,
-	details: { string }?,
-	message: string,
-}
-
-type OperationFailedResponse = {
-	done: true,
-	error: ErrorResponse,
-	metadata: {
-		errors: {
-			{
-				error: ErrorResponse,
-				fieldMask: { [string]: any },
-			}
-		},
-	},
-	operationId: string,
-	path: string,
-}
-
-type OperationSucceededResponse = {
-	done: true,
-	operationId: string,
-	path: string,
-	response: { [string]: any },
-}
-
-type OperationResponse = OperationSucceededResponse | OperationFailedResponse | ErrorResponse
+type OperationResponse = types.OperationResponse
 
 local function waitForAssetOperationAsync(operationId: string, apiKey: string): OperationResponse
 	local currentRetries = 0
