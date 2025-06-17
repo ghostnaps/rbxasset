@@ -2,19 +2,23 @@ local t = require("@pkg/t/lib")
 
 local types = {}
 
+export type AssetType = "Package" | "Plugin"
+export type CreatorType = "User" | "Group"
 export type AssetId = string | number
 
 export type AssetConfig = {
 	asset: {
 		name: string,
+
 		description: string?,
+		distribute: boolean?,
 		icon: string?,
 		thumbnails: { string }?,
-		distribute: boolean?,
+		type: AssetType,
 	},
 	deployment: {
 		creatorId: number,
-		creatorType: "User" | "Group",
+		creatorType: CreatorType,
 		universeId: number,
 		placeId: number,
 	},
@@ -22,10 +26,12 @@ export type AssetConfig = {
 types.validateAssetConfig = t.strictInterface({
 	asset = t.strictInterface({
 		name = t.string,
-		icon = t.optional(t.string),
+
 		description = t.optional(t.string),
-		thumbnails = t.optional(t.array(t.string)),
 		distribute = t.optional(t.boolean),
+		icon = t.optional(t.string),
+		thumbnails = t.optional(t.array(t.string)),
+		type = t.optional(t.union(t.literal("Package"), t.literal("Plugin"))),
 	}),
 	deployment = t.strictInterface({
 		creatorId = t.union(t.string, t.number),
@@ -54,5 +60,27 @@ types.validateAssetManifest = t.strictInterface({
 		})
 	)),
 })
+
+export type ErrorStatusResponse = {
+	code: string,
+	message: string,
+}
+
+type BaseOperationResponse = {
+	done: boolean,
+	operationId: string,
+	path: string,
+}
+
+type OperationPendingResponse = BaseOperationResponse & {
+	done: false,
+}
+
+type OperationSuccessResponse = BaseOperationResponse & {
+	done: true,
+	response: { [string]: any },
+}
+
+export type OperationResponse = OperationSuccessResponse | OperationPendingResponse | ErrorStatusResponse
 
 return types

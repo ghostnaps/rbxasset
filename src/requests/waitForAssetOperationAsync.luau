@@ -2,19 +2,12 @@ local serde = require("@lune/serde")
 local task = require("@lune/task")
 
 local fetch = require("@root/requests/fetch")
+local types = require("@root/types")
 
 local MAX_RETRIES = 5
 local RETRY_MULTIPLIER = 2
 
-type OperationResponse = {
-	done: boolean,
-	operationId: string,
-	path: string,
-	response: { [string]: any },
-} | {
-	code: string,
-	message: string,
-}
+type OperationResponse = types.OperationResponse
 
 local function waitForAssetOperationAsync(operationId: string, apiKey: string): OperationResponse
 	local currentRetries = 0

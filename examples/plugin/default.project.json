@@ -1,0 +1,7 @@
+{
+  "name": "plugin",
+  "emitLegacyScripts": false,
+  "tree": {
+    "$path": "src"
+  }
+}

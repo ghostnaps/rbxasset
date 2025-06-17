@@ -6,13 +6,14 @@ local function createOrUpdateAssetAsync(
 	instance: Instance,
 	creatorId: number,
 	creatorType: Enum.AssetCreatorType,
+	assetType: Enum.AssetType,
 	existingAssetId: string?
 ): (string, number)
 	if existingAssetId then
 		print(`updating asset with ID {existingAssetId}`)
 
 		local _success, versionNumber =
-			AssetService:CreateAssetVersionAsync(instance, Enum.AssetType.Model, existingAssetId, {
+			AssetService:CreateAssetVersionAsync(instance, assetType, existingAssetId, {
 				CreatorId = creatorId,
 				CreatorType = creatorType,
 			})
@@ -23,7 +24,7 @@ local function createOrUpdateAssetAsync(
 	else
 		print("creating asset for the first time")
 
-		local _success, assetId = AssetService:CreateAssetAsync(instance, Enum.AssetType.Model, {
+		local _success, assetId = AssetService:CreateAssetAsync(instance, assetType, {
 			Name = instance.Name,
 			CreatorId = creatorId,
 			CreatorType = creatorType,
@@ -49,12 +50,20 @@ local creatorType = assert(
 	"_G.CREATOR_TYPE must be a valid AssetCreatorType value"
 )
 
+local ASSET_TYPE = _G.ASSET_TYPE
+assert(ASSET_TYPE, "_G.ASSET_TYPE must be supplied")
+
+local assetType = assert(
+	Enum.AssetType[ASSET_TYPE],
+	"_G.ASSET_TYPE must be a valid Enum.AssetType value"
+)
+
 local ASSET_ID: string? = _G.ASSET_ID
 
 local instance = ReplicatedStorage:GetChildren()[1]
 assert(instance, `no instance found for upload in ReplicatedStorage`)
 
-local remoteAssetId, versionNumber = createOrUpdateAssetAsync(instance, creatorId, creatorType, ASSET_ID)
+local remoteAssetId, versionNumber = createOrUpdateAssetAsync(instance, creatorId, creatorType, assetType, ASSET_ID)
 
 print(`ASSET_ID={remoteAssetId}`)
 print(`VERSION_NUMBER={versionNumber}`)
