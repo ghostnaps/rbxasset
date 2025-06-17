@@ -1,28 +1,16 @@
 local fs = require("@lune/fs")
 local serde = require("@lune/serde")
 
+local executeLuauTask = require("@root/cloud/executeLuauTask")
 local logging = require("@root/logging")
 local run = require("@root/lib/run")
 
 local TEMP_DIR = "temp"
-local TASK_PATH = `{TEMP_DIR}/task.luau`
 local ROJO_PROJECT_PATH = `{TEMP_DIR}/default.project.json`
 local BUILD_PATH = `{TEMP_DIR}/build.rbxl`
 
-local function extractVariablesFromOutput(output: string)
-	local result: { [string]: string } = {}
-	for key, value in output:gmatch("([%u_]+)=([%d%w]+)") do
-		if key and value then
-			value = value:gsub("(%s+)?.*(%s+)?", "")
-			result[key] = value
-		end
-	end
-
-	return result
-end
-
 local function runLuauTask(
-	taskBody: string,
+	scriptContent: string,
 	globals: {
 		[string]: string | number | boolean,
 	},
@@ -38,7 +26,6 @@ local function runLuauTask(
 	if not fs.isDir("temp") then
 		fs.writeDir("temp")
 	end
-	fs.writeFile(TASK_PATH, taskBody)
 
 	logging.info("creating Rojo project")
 	local rojoProject = {
@@ -48,7 +35,8 @@ local function runLuauTask(
 			ReplicatedStorage = {
 				Build = if runnerContext.modelPath
 					then {
-						["$path"] = runnerContext.modelPath,
+						-- TODO: Find a better way to reference the path to the asset
+						["$path"] = `../{runnerContext.modelPath}`,
 					}
 					else nil,
 			},
@@ -61,24 +49,20 @@ local function runLuauTask(
 	logging.info("substituting globals", globals)
 
 	for global, value in globals do
-		run("sed", { "-i", "-e", `'s/= _G.{global}/= "{value}"/g'`, TASK_PATH })
+		scriptContent = scriptContent:gsub(`= _G.{global}`, `= "{value}"`)
 	end
 
-	local output = run("python3", {
-		"src/python/upload_and_run_task.py",
+	local variables = executeLuauTask(
 		BUILD_PATH,
-		TASK_PATH,
-	}, {
-		env = {
-			ROBLOX_CI_UNIVERSE_ID = runnerContext.universeId,
-			ROBLOX_CI_PLACE_ID = runnerContext.placeId,
-			ROBLOX_API_KEY = runnerContext.apiKey,
-		},
-	})
+		scriptContent,
+		runnerContext.universeId,
+		runnerContext.placeId,
+		runnerContext.apiKey
+	)
 
 	run("rm", { "-rf", TEMP_DIR })
 
-	return extractVariablesFromOutput(output)
+	return variables
 end
 
 return runLuauTask
