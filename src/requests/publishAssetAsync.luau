@@ -15,7 +15,6 @@ local function publishAssetAsync(
 	assetName: string,
 	asset: AssetConfig,
 	environment: EnvironmentConfig,
-	assetPath: string,
 	apiKey: string
 ): string
 	local manifest = getOrCreateAssetManifest(projectPath)
@@ -37,7 +36,7 @@ local function publishAssetAsync(
 	}, {
 		universeId = environment.universeId,
 		placeId = environment.placeId,
-		modelPath = assetPath,
+		modelPath = asset.model,
 		apiKey = apiKey,
 	})
 

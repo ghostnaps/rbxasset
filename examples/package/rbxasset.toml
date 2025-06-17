@@ -3,6 +3,7 @@ name = "Display Name"
 environment = "production"
 description = "Longform description"
 icon = "icon.png"
+model = "asset.rbxm"
 
 [environments.production]
 creatorId = 35175308

@@ -6,7 +6,7 @@ local publishImagesAsync = require("@root/requests/publishImagesAsync")
 local readConfig = require("@root/manifest/readConfig")
 local setAssetIconAsync = require("@root/requests/setAssetIconAsync")
 
-local function publishPackageAsync(projectPath: string, assetName: string, assetPath: string, apiKey: string)
+local function publishPackageAsync(projectPath: string, assetName: string, apiKey: string)
 	local config = readConfig(projectPath)
 
 	local asset = config.assets[assetName]
@@ -17,7 +17,7 @@ local function publishPackageAsync(projectPath: string, assetName: string, asset
 
 	local environment = config.environments[asset.environment]
 
-	local assetId = publishAssetAsync(projectPath, assetName, asset, environment, assetPath, apiKey)
+	local assetId = publishAssetAsync(projectPath, assetName, asset, environment, apiKey)
 	publishImagesAsync(projectPath, asset, environment, apiKey)
 	setAssetIconAsync(projectPath, assetName, asset, apiKey)
 

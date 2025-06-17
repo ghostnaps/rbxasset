@@ -14,6 +14,9 @@ export type AssetConfig = {
 	-- Name of the asset that will be displayed on the Creator Store
 	name: string,
 
+	-- Path of the rbxm file to upload
+	model: string,
+
 	-- The environment to deploy to. For example, if `[environments.production]`
 	-- is specified in `rbxasset.toml`, then this value should be "production"
 	environment: string,
@@ -30,6 +33,7 @@ export type AssetConfig = {
 }
 types.validateAssetConfig = t.strictInterface({
 	name = t.string,
+	model = t.string,
 	environment = t.string,
 
 	description = t.optional(t.string),
