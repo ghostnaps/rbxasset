@@ -11,19 +11,29 @@ local function countObject(obj: { [any]: any }): number
 end
 
 export type AssetConfig = {
+	-- Name of the asset that will be displayed on the Creator Store
 	name: string,
+
+	-- The environment to deploy to. For example, if `[environments.production]`
+	-- is specified in `rbxasset.toml`, then this value should be "production"
 	environment: string,
 
+	-- Description of the asset on the Creator Store
 	description: string?,
+
+	-- Path to the image to use for the asset's icon on the Creator Store. This
+	-- must be a png.
 	icon: string?,
+
+	-- Paths to images to use for the asset's previews on the Creator Store.
 	thumbnails: { string }?,
 }
 types.validateAssetConfig = t.strictInterface({
 	name = t.string,
 	environment = t.string,
 
-	icon = t.optional(t.string),
 	description = t.optional(t.string),
+	icon = t.optional(t.string),
 	thumbnails = t.optional(t.array(t.string)),
 })
 
