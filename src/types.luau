@@ -2,6 +2,8 @@ local t = require("@pkg/t/lib")
 
 local types = {}
 
+export type AssetId = string | number
+
 export type AssetConfig = {
 	asset: {
 		name: string,
