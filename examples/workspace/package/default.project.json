@@ -1,5 +1,5 @@
 {
-  "name": "package",
+  "name": "WorkspacePackage",
   "tree": {
     "$path": "src"
   }
