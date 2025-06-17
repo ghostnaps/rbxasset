@@ -9,6 +9,12 @@ local function createOrUpdateAssetAsync(
 	assetType: Enum.AssetType,
 	existingAssetId: string?
 ): (string, number)
+	local isPackage = false
+	if assetType == Enum.AssetType.Package then
+		isPackage = true
+		assetType = Enum.AssetType.Model
+	end
+
 	if existingAssetId then
 		print(`updating asset with ID {existingAssetId}`)
 
@@ -28,7 +34,7 @@ local function createOrUpdateAssetAsync(
 			Name = instance.Name,
 			CreatorId = creatorId,
 			CreatorType = creatorType,
-			IsPackage = true,
+			IsPackage = isPackage,
 		})
 
 		print(`created asset with ID {assetId}`)

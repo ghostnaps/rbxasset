@@ -11,6 +11,7 @@ environment = "production"
 description = "Longform description"
 icon = "plugin/icon.png"
 model = "plugin.rbxm"
+type = "Plugin"
 
 [environments.production]
 creatorId = 35175308
