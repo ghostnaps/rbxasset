@@ -1,0 +1,21 @@
+[assets.package]
+name = "Workspace Package"
+environment = "production"
+description = "Longform description"
+icon = "package/icon.png"
+model = "package.rbxm"
+distribute = true
+
+[assets.plugin]
+name = "Workspace Plugin"
+environment = "production"
+description = "Longform description"
+icon = "plugin/icon.png"
+model = "plugin.rbxm"
+distribute = true
+
+[environments.production]
+creatorId = 35175308
+creatorType = "Group"
+universeId = 7854970752
+placeId = 119490202754966
