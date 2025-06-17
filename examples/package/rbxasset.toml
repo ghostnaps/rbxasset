@@ -3,7 +3,6 @@ name = "Display Name"
 environment = "production"
 description = "Longform description"
 icon = "icon.png"
-distribute = true
 
 [environments.production]
 creatorId = 35175308

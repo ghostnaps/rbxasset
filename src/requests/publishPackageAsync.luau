@@ -15,11 +15,6 @@ local function publishPackageAsync(projectPath: string, assetName: string, asset
 		process.exit(1)
 	end
 
-	if not asset.distribute then
-		logging.err("refusing to publish because `distribute` is set to `false`")
-		process.exit(1)
-	end
-
 	local environment = config.environments[asset.environment]
 
 	local assetId = publishAssetAsync(projectPath, assetName, asset, environment, assetPath, apiKey)

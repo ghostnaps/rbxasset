@@ -17,7 +17,6 @@ Create an `rbxasset.toml` file in your project with the following content:
 name = "Display Name"
 description = "Longform project description"
 icon = "img/icon.png"
-distribute = true
 
 [deployment]
 creatorId = 35175308

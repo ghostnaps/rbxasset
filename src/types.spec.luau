@@ -35,7 +35,6 @@ test.suite("validateConfig", function()
 					description = "Asset description",
 					icon = "icon.png",
 					thumbnails = { "thumbnails/1.png" },
-					distribute = true,
 				},
 			},
 			environments = {
@@ -76,7 +75,6 @@ test.suite("validateConfig", function()
 					description = "Asset description",
 					icon = "icon.png",
 					thumbnails = { "thumbnails/1.png" },
-					distribute = true,
 					environment = "does-not-exist",
 				},
 			},
@@ -95,7 +93,6 @@ test.suite("validateConfig", function()
 					description = "Asset description",
 					icon = "icon.png",
 					thumbnails = { "thumbnails/1.png" },
-					distribute = true,
 					environment = "does-not-exist",
 				},
 			},

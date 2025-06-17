@@ -17,7 +17,6 @@ export type AssetConfig = {
 	description: string?,
 	icon: string?,
 	thumbnails: { string }?,
-	distribute: boolean?,
 }
 types.validateAssetConfig = t.strictInterface({
 	name = t.string,
@@ -26,7 +25,6 @@ types.validateAssetConfig = t.strictInterface({
 	icon = t.optional(t.string),
 	description = t.optional(t.string),
 	thumbnails = t.optional(t.array(t.string)),
-	distribute = t.optional(t.boolean),
 })
 
 export type EnvironmentConfig = {

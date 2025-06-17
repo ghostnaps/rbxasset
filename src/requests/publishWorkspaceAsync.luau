@@ -10,11 +10,6 @@ local function publishWorkspaceAsync(projectPath: string, apiKey: string)
 	local config = readConfig(projectPath)
 
 	for assetName, asset in config.assets do
-		if not asset.distribute then
-			logging.warn(`publishing skipped for {asset.name} because "distribute" is set to false`)
-			continue
-		end
-
 		local environment = config.environments[asset.environment]
 
 		task.spawn(function()
