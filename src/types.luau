@@ -61,7 +61,7 @@ types.validateEnvironmentConfig = t.strictInterface({
 	placeId = t.number,
 })
 
-export type Config = {
+export type Manifest = {
 	assets: {
 		[string]: AssetConfig,
 	},
@@ -69,7 +69,7 @@ export type Config = {
 		[string]: EnvironmentConfig,
 	},
 }
-types.validateConfig = function(value: any): (boolean, string?)
+types.validateManifest = function(value: any): (boolean, string?)
 	local success, message = t.strictInterface({
 		assets = t.map(t.string, types.validateAssetConfig),
 		environments = t.map(t.string, types.validateEnvironmentConfig),
@@ -80,11 +80,11 @@ types.validateConfig = function(value: any): (boolean, string?)
 	end
 
 	if typeof(value.assets) == "table" and countObject(value.assets) == 0 then
-		return false, "at least one asset must be defined in the config"
+		return false, "at least one asset must be defined in the manifest"
 	end
 
 	if typeof(value.environments) == "table" and countObject(value.environments) == 0 then
-		return false, "at least one environment must be defined in the config"
+		return false, "at least one environment must be defined in the manifest"
 	end
 
 	for key, asset in value.assets do

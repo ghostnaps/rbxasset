@@ -1,14 +1,14 @@
 local logging = require("@root/logging")
 local publishAssetAsync = require("@root/requests/publishAssetAsync")
 local publishImagesAsync = require("@root/requests/publishImagesAsync")
-local readConfig = require("@root/manifest/readConfig")
+local readManifest = require("@root/manifest/readManifest")
 local setAssetIconAsync = require("@root/requests/setAssetIconAsync")
 
 local function publishWorkspaceAsync(projectPath: string, apiKey: string)
-	local config = readConfig(projectPath)
+	local manifest = readManifest(projectPath)
 
-	for assetName, asset in config.assets do
-		local environment = config.environments[asset.environment]
+	for assetName, asset in manifest.assets do
+		local environment = manifest.environments[asset.environment]
 
 		local assetId = publishAssetAsync(projectPath, assetName, asset, environment, apiKey)
 		publishImagesAsync(projectPath, asset, environment, apiKey)

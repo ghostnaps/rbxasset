@@ -9,7 +9,7 @@ flowchart TD;
          --> BeginPublishing
 
     subgraph rbxasset
-        AssetConfig[(rbxasset.toml)]
+        AssetManifest[(rbxasset.toml)]
         AssetLockfile[(rbxasset.lock)]
 
         BeginPublishing("publishPackageAsync()")
@@ -30,10 +30,10 @@ flowchart TD;
 
         UploadImages(Create Image assets for the icon and previews)
 
-        AssetConfig -. read image paths .-> UploadImages
+        AssetManifest -. read image paths .-> UploadImages
 
         SyncAssetDetails(Sync asset name, description, icon, and distribution status to Creator Store)
-        AssetConfig -. read name, description, distribution status .-> SyncAssetDetails
+        AssetManifest -. read name, description, distribution status .-> SyncAssetDetails
 
         UpdateVersion
             --> CreateAssetVersionAsync("AssetService:CreateAssetVersionAsync()")

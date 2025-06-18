@@ -13,7 +13,7 @@ local ASSETS_BASE_URL = "https://apis.roblox.com/assets/v1"
 
 local function setAssetIconAsync(projectPath: string, assetName: string, assetConfig: AssetConfig, apiKey: string)
 	if not assetConfig.icon then
-		logging.debug("no icon in the asset config. skipping...")
+		logging.debug("no icon in the asset manifest. skipping...")
 		return
 	end
 

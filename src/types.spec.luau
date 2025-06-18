@@ -4,9 +4,9 @@ local check = frktest.assert.check
 
 local types = require("./types")
 
-test.suite("validateConfig", function()
-	test.case("accepts minimal config", function()
-		local success = types.validateConfig({
+test.suite("validateManifest", function()
+	test.case("accepts minimal manifest", function()
+		local success = types.validateManifest({
 			assets = {
 				main = {
 					name = "Asset Name",
@@ -27,8 +27,8 @@ test.suite("validateConfig", function()
 		check.is_true(success)
 	end)
 
-	test.case("accepts optional config values", function()
-		local success = types.validateConfig({
+	test.case("accepts optional manifest values", function()
+		local success = types.validateManifest({
 			assets = {
 				main = {
 					name = "Asset Name",
@@ -53,7 +53,7 @@ test.suite("validateConfig", function()
 	end)
 
 	test.case("denies empty assets object", function()
-		local success, message = types.validateConfig({
+		local success, message = types.validateManifest({
 			assets = {},
 			environments = {
 				production = {
@@ -66,11 +66,11 @@ test.suite("validateConfig", function()
 		})
 
 		check.is_false(success)
-		check.equal(message, "at least one asset must be defined in the config")
+		check.equal(message, "at least one asset must be defined in the manifest")
 	end)
 
 	test.case("denies empty environments object", function()
-		local success, message = types.validateConfig({
+		local success, message = types.validateManifest({
 			assets = {
 				main = {
 					name = "Asset Name",
@@ -85,11 +85,11 @@ test.suite("validateConfig", function()
 		})
 
 		check.is_false(success)
-		check.equal(message, "at least one environment must be defined in the config")
+		check.equal(message, "at least one environment must be defined in the manifest")
 	end)
 
 	test.case("assets must map back to a valid environment", function()
-		local success, message = types.validateConfig({
+		local success, message = types.validateManifest({
 			assets = {
 				main = {
 					name = "Asset Name",
@@ -114,8 +114,8 @@ test.suite("validateConfig", function()
 		check.equal(message, `asset "main" attempts to use the environment "does-not-exist" which does not exist`)
 	end)
 
-	test.case("denies optional config values of the wrong type", function()
-		local success = types.validateConfig({
+	test.case("denies optional manifest values of the wrong type", function()
+		local success = types.validateManifest({
 			assets = {
 				main = {
 					name = "Asset Name",
@@ -139,13 +139,13 @@ test.suite("validateConfig", function()
 	end)
 
 	test.case("denies empty object", function()
-		local success = types.validateConfig({})
+		local success = types.validateManifest({})
 
 		check.is_false(success)
 	end)
 
 	test.case("denies invalid types", function()
-		local success = types.validateConfig({
+		local success = types.validateManifest({
 			assets = {
 				main = {
 					name = false,

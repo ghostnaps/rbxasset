@@ -1,6 +1,6 @@
 local types = require("@self/types")
 
-export type Config = types.Config
+export type Manifest = types.Manifest
 export type Lockfile = types.Lockfile
 
 return {
