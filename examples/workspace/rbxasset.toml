@@ -1,12 +1,12 @@
 [assets.package]
-name = "Workspace Package"
+name = "Example Workspace Package"
 environment = "production"
 description = "Longform description"
 icon = "package/icon.png"
 model = "package.rbxm"
 
 [assets.plugin]
-name = "Workspace Plugin"
+name = "Example Workspace Plugin"
 environment = "production"
 description = "Longform description"
 icon = "plugin/icon.png"

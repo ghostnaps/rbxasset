@@ -1,5 +1,5 @@
 [assets.package]
-name = "Display Name"
+name = "Example Package"
 environment = "production"
 description = "Longform description"
 icon = "icon.png"
