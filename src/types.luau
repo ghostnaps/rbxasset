@@ -61,7 +61,7 @@ types.validateEnvironmentConfig = t.strictInterface({
 	placeId = t.number,
 })
 
-export type Config = {
+export type Manifest = {
 	assets: {
 		[string]: AssetConfig,
 	},
@@ -69,7 +69,7 @@ export type Config = {
 		[string]: EnvironmentConfig,
 	},
 }
-types.validateConfig = function(value: any): (boolean, string?)
+types.validateManifest = function(value: any): (boolean, string?)
 	local success, message = t.strictInterface({
 		assets = t.map(t.string, types.validateAssetConfig),
 		environments = t.map(t.string, types.validateEnvironmentConfig),
@@ -80,11 +80,11 @@ types.validateConfig = function(value: any): (boolean, string?)
 	end
 
 	if typeof(value.assets) == "table" and countObject(value.assets) == 0 then
-		return false, "at least one asset must be defined in the config"
+		return false, "at least one asset must be defined in the manifest"
 	end
 
 	if typeof(value.environments) == "table" and countObject(value.environments) == 0 then
-		return false, "at least one environment must be defined in the config"
+		return false, "at least one environment must be defined in the manifest"
 	end
 
 	for key, asset in value.assets do
@@ -96,19 +96,19 @@ types.validateConfig = function(value: any): (boolean, string?)
 	return true, nil
 end
 
-type Image = {
+type ImageLock = {
 	assetId: string,
 	hash: string,
 }
-types.validateImage = t.strictInterface({
+types.validateImageLock = t.strictInterface({
 	assetId = t.string,
 	hash = t.string,
 })
 
-type ManifestAsset = {
+type AssetLock = {
 	assetId: string,
 }
-types.validateManifestAsset = t.strictInterface({
+types.validateAssetLock = t.strictInterface({
 	assetId = t.string,
 	images = t.optional(t.map(
 		t.string,
@@ -119,15 +119,15 @@ types.validateManifestAsset = t.strictInterface({
 	)),
 })
 
-export type Manifest = {
+export type Lockfile = {
 	assets: {
-		[string]: ManifestAsset,
+		[string]: AssetLock,
 	},
-	images: { [string]: Image },
+	images: { [string]: ImageLock },
 }
-types.validateManifest = t.strictInterface({
-	assets = t.map(t.string, types.validateManifestAsset),
-	images = t.map(t.string, types.validateImage),
+types.validateLockfile = t.strictInterface({
+	assets = t.map(t.string, types.validateAssetLock),
+	images = t.map(t.string, types.validateImageLock),
 })
 
 export type ErrorStatusResponse = {

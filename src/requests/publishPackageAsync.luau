@@ -3,19 +3,19 @@ local process = require("@lune/process")
 local logging = require("@root/logging")
 local publishAssetAsync = require("@root/requests/publishAssetAsync")
 local publishImagesAsync = require("@root/requests/publishImagesAsync")
-local readConfig = require("@root/manifest/readConfig")
+local readManifest = require("@root/manifest/readManifest")
 local setAssetIconAsync = require("@root/requests/setAssetIconAsync")
 
 local function publishPackageAsync(projectPath: string, assetName: string, apiKey: string)
-	local config = readConfig(projectPath)
+	local manifest = readManifest(projectPath)
 
-	local asset = config.assets[assetName]
+	local asset = manifest.assets[assetName]
 	if not asset then
-		logging.err(`publishing failed, could not find an asset named {assetName} in the config`)
+		logging.err(`publishing failed, could not find an asset named {assetName} in the manifest`)
 		process.exit(1)
 	end
 
-	local environment = config.environments[asset.environment]
+	local environment = manifest.environments[asset.environment]
 
 	local assetId = publishAssetAsync(projectPath, assetName, asset, environment, apiKey)
 	publishImagesAsync(projectPath, asset, environment, apiKey)

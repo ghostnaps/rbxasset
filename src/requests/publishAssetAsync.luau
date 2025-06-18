@@ -1,11 +1,11 @@
 local getAssetDetailsAsync = require("@root/requests/getAssetDetailsAsync")
-local getOrCreateAssetManifest = require("@root/manifest/getOrCreateAssetManifest")
+local getOrCreateAssetLockfile = require("@root/manifest/getOrCreateAssetLockfile")
 local join = require("@root/lib/join")
 local publishAssetTask = require("@root/tasks/publishAsset")
 local runLuauTask = require("@root/lib/runLuauTask")
 local setAssetDetailsAsync = require("@root/requests/setAssetDetailsAsync")
 local types = require("@root/types")
-local writeManifest = require("@root/manifest/writeManifest")
+local writeLockfile = require("@root/manifest/writeLockfile")
 
 type AssetConfig = types.AssetConfig
 type EnvironmentConfig = types.EnvironmentConfig
@@ -17,8 +17,8 @@ local function publishAssetAsync(
 	environment: EnvironmentConfig,
 	apiKey: string
 ): string?
-	local manifest = getOrCreateAssetManifest(projectPath)
-	local existingAsset = manifest.assets[assetName]
+	local lockfile = getOrCreateAssetLockfile(projectPath)
+	local existingAsset = lockfile.assets[assetName]
 
 	-- If this assetId exists then `tasks/publishAsset` will update the asset
 	-- version. Otherwise it will create the asset for the first time
@@ -30,8 +30,8 @@ local function publishAssetAsync(
 		CREATOR_TYPE = environment.creatorType,
 		ASSET_TYPE = asset.type or "Package",
 
-		-- Only provide the assetId from the manifest if there's a matching
-		-- asset on the Creator Store. We need this check in case the manifest
+		-- Only provide the assetId from the lockfile if there's a matching
+		-- asset on the Creator Store. We need this check in case the lockfile
 		-- is edited manually to a nonexistent id
 		ASSET_ID = if assetDetails and assetDetails.assetId then existingAssetId else nil :: any,
 	}, {
@@ -52,15 +52,15 @@ local function publishAssetAsync(
 			description = asset.description,
 		})
 
-		local newManifest = join(manifest, {
-			assets = join(manifest.assets, {
-				[assetName] = join(manifest.assets[assetName], {
+		local newLockfile = join(lockfile, {
+			assets = join(lockfile.assets, {
+				[assetName] = join(lockfile.assets[assetName], {
 					assetId = assetId,
 				}),
 			}),
 		})
 
-		writeManifest(projectPath, newManifest)
+		writeLockfile(projectPath, newLockfile)
 	end
 
 	return assetId
