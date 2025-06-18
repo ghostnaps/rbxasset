@@ -2,10 +2,10 @@ local fs = require("@lune/fs")
 local serde = require("@lune/serde")
 
 local createImageAsync = require("@root/requests/createImageAsync")
-local getOrCreateAssetManifest = require("@root/manifest/getOrCreateAssetManifest")
+local getOrCreateAssetLockfile = require("@root/manifest/getOrCreateAssetLockfile")
 local logging = require("@root/logging")
 local types = require("@root/types")
-local writeManifest = require("@root/manifest/writeManifest")
+local writeLockfile = require("@root/manifest/writeLockfile")
 
 type AssetConfig = types.AssetConfig
 type EnvironmentConfig = types.EnvironmentConfig
@@ -22,10 +22,10 @@ local function publishImagesAsync(
 	environment: EnvironmentConfig,
 	apiKey: string
 )
-	local assetManifest = getOrCreateAssetManifest(projectPath)
+	local assetLockfile = getOrCreateAssetLockfile(projectPath)
 	local pendingImages: { PendingImage } = {}
 
-	local existingImages = if assetManifest then assetManifest.images else {} :: typeof(({} :: types.Manifest).images)
+	local existingImages = if assetLockfile then assetLockfile.images else {} :: typeof(({} :: types.Lockfile).images)
 
 	local icon = assetConfig.icon
 	if icon then
@@ -105,11 +105,11 @@ local function publishImagesAsync(
 	end
 
 	if #pendingImages > 0 then
-		local newAssetManifest = table.clone(assetManifest or {})
-		newAssetManifest.images = newAssetManifest.images or {}
+		local newAssetLockfile = table.clone(assetLockfile or {})
+		newAssetLockfile.images = newAssetLockfile.images or {}
 
 		for _, pendingImage in pendingImages do
-			newAssetManifest.images[pendingImage.filename] = {
+			newAssetLockfile.images[pendingImage.filename] = {
 				assetId = pendingImage.assetId,
 				hash = serde.hash("sha256", fs.readFile(pendingImage.path)),
 			}
@@ -119,9 +119,9 @@ local function publishImagesAsync(
 			)
 		end
 
-		writeManifest(projectPath, newAssetManifest)
+		writeLockfile(projectPath, newAssetLockfile)
 	else
-		logging.debug("no new images to write to the manifest. skipping...")
+		logging.debug("no new images to write to the lockfile. skipping...")
 	end
 
 	logging.info("successfully synced images to Creator Store")

@@ -10,7 +10,7 @@ flowchart TD;
 
     subgraph rbxasset
         AssetConfig[(rbxasset.toml)]
-        AssetManifest[(rbxasset-manifest.toml)]
+        AssetLockfile[(rbxasset.lock)]
 
         BeginPublishing("publishPackageAsync()")
             --> AssetExists{Asset exists on Creator Store?}
@@ -18,15 +18,15 @@ flowchart TD;
         AssetExists -- Yes  --> UpdateVersion(Update asset version with new rbxm)
         AssetExists -- No --> CreateAsset(Create new Package asset)
 
-        AssetManifest -. read assetId .-> UpdateVersion
+        AssetLockfile -. read assetId .-> UpdateVersion
 
         CompareImageHashes{For each image, is there a matching hash?}
         CompareImageHashes -- Yes --> SyncAssetDetails
         CompareImageHashes -- No --> UploadImages
 
-        AssetManifest -. read image hashes .-> CompareImageHashes
+        AssetLockfile -. read image hashes .-> CompareImageHashes
 
-        CreateAsset -. write assetId .-> AssetManifest
+        CreateAsset -. write assetId .-> AssetLockfile
 
         UploadImages(Create Image assets for the icon and previews)
 
@@ -44,7 +44,7 @@ flowchart TD;
             --> CompareImageHashes
 
         UploadImages --> SyncAssetDetails
-        UploadImages -. store image hash and id .->  AssetManifest
+        UploadImages -. store image hash and id .->  AssetLockfile
     end
 
     SyncAssetDetails

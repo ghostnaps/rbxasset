@@ -2,7 +2,7 @@ local serde = require("@lune/serde")
 
 local createFormData = require("@root/requests/forms/createFormData")
 local fetch = require("@root/requests/fetch")
-local getOrCreateAssetManifest = require("@root/manifest/getOrCreateAssetManifest")
+local getOrCreateAssetLockfile = require("@root/manifest/getOrCreateAssetLockfile")
 local logging = require("@root/logging")
 local types = require("@root/types")
 local waitForAssetOperationAsync = require("@root/requests/waitForAssetOperationAsync")
@@ -17,22 +17,22 @@ local function setAssetIconAsync(projectPath: string, assetName: string, assetCo
 		return
 	end
 
-	local assetManifest = getOrCreateAssetManifest(projectPath)
-	if not assetManifest then
-		logging.err("asset manifest must exist before the icon can be set")
+	local assetLockfile = getOrCreateAssetLockfile(projectPath)
+	if not assetLockfile then
+		logging.err("asset lockfile must exist before the icon can be set")
 		return
 	end
 
-	local existingAsset = if assetManifest.assets then assetManifest.assets[assetName] else nil
+	local existingAsset = if assetLockfile.assets then assetLockfile.assets[assetName] else nil
 	local assetId = if existingAsset then existingAsset.assetId else nil
 	if not assetId then
-		logging.err("no assetId found in the manifest. has the package been uploaded before?")
+		logging.err("no assetId found in the lockfile. has the package been uploaded before?")
 		return
 	end
 
-	local iconImage = if assetManifest.images then assetManifest.images[assetConfig.icon] else nil
+	local iconImage = if assetLockfile.images then assetLockfile.images[assetConfig.icon] else nil
 	if not iconImage then
-		logging.err(`no image found for {assetConfig.icon} in the manifest`)
+		logging.err(`no image found for {assetConfig.icon} in the lockfile`)
 		return
 	end
 

@@ -96,19 +96,19 @@ types.validateConfig = function(value: any): (boolean, string?)
 	return true, nil
 end
 
-type Image = {
+type ImageLock = {
 	assetId: string,
 	hash: string,
 }
-types.validateImage = t.strictInterface({
+types.validateImageLock = t.strictInterface({
 	assetId = t.string,
 	hash = t.string,
 })
 
-type ManifestAsset = {
+type AssetLock = {
 	assetId: string,
 }
-types.validateManifestAsset = t.strictInterface({
+types.validateAssetLock = t.strictInterface({
 	assetId = t.string,
 	images = t.optional(t.map(
 		t.string,
@@ -119,15 +119,15 @@ types.validateManifestAsset = t.strictInterface({
 	)),
 })
 
-export type Manifest = {
+export type Lockfile = {
 	assets: {
-		[string]: ManifestAsset,
+		[string]: AssetLock,
 	},
-	images: { [string]: Image },
+	images: { [string]: ImageLock },
 }
-types.validateManifest = t.strictInterface({
-	assets = t.map(t.string, types.validateManifestAsset),
-	images = t.map(t.string, types.validateImage),
+types.validateLockfile = t.strictInterface({
+	assets = t.map(t.string, types.validateAssetLock),
+	images = t.map(t.string, types.validateImageLock),
 })
 
 export type ErrorStatusResponse = {

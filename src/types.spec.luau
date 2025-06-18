@@ -167,9 +167,9 @@ test.suite("validateConfig", function()
 	end)
 end)
 
-test.suite("validateManifest", function()
+test.suite("validateLockfile", function()
 	test.case("must have an assetId", function()
-		local success = types.validateManifest({
+		local success = types.validateLockfile({
 			assets = {
 				foo = {
 					assetId = "123456789",
@@ -182,7 +182,7 @@ test.suite("validateManifest", function()
 	end)
 
 	test.case("handles storing images", function()
-		local success = types.validateManifest({
+		local success = types.validateLockfile({
 			assets = {
 				foo = {
 					assetId = "123456789",
@@ -200,7 +200,7 @@ test.suite("validateManifest", function()
 	end)
 
 	test.case("denies empty object", function()
-		local success = types.validateManifest({})
+		local success = types.validateLockfile({})
 
 		check.is_false(success)
 	end)
