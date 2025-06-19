@@ -1,6 +1,7 @@
 name = "ghostnaps/rbxasset"
 version = "0.1.0"
 authors = ["Marin Minnerly"]
+description = "Deploy from GitHub to the Roblox Creator Store"
 repository = "https://github.com/ghostnaps/rbxasset"
 license = "MIT"
 
