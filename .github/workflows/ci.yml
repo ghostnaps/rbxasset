@@ -19,6 +19,9 @@ jobs:
 
       - uses: lumin-org/setup-pesde@v0.4.1
 
+      - name: Install dependencies
+        run: pesde install
+
       - name: Run unit tests
         run: lune run test
 
@@ -33,6 +36,9 @@ jobs:
           allow-external-github-orgs: true
 
       - uses: lumin-org/setup-pesde@v0.4.1
+
+      - name: Install dependencies
+        run: pesde install
 
       - name: Lint
         run: lune run lint
