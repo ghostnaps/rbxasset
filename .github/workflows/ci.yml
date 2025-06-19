@@ -48,9 +48,10 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           allow-external-github-orgs: true
+          version: 1.6.3
 
       - name: Install dependencies
         run: lune run install
 
       - name: Analyze
-        run: luau-lsp analyze --ignore=**/pkg/** .lune src examples
+        run: lune run analyze
