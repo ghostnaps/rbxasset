@@ -1,9 +1,11 @@
 local process = require("@lune/process")
 
-local console_reporter = require("@pkg/frktest/src/reporters/console_reporter")
-local frktest = require("@pkg/frktest/src/frktest")
+local frktest = require("@pkg/frktest")
+
 local logging = require("@root/logging")
 local run = require("@root/lib/run")
+
+local reporter = frktest._reporters.lune_console_reporter
 
 local function loadTestCases()
 	local output = run("find", { "src", "-iname", "*.spec.luau" })
@@ -20,7 +22,7 @@ end
 
 loadTestCases()
 
-console_reporter.init()
+reporter.init()
 local success = frktest.run()
 
 process.exit(if success then 0 else 1)
