@@ -53,8 +53,10 @@ jobs:
       - name: Install tools
         run: rokit install --no-trust-check
 
+      - uses: lumin-org/setup-pesde@v0.4.1
+
       - name: Install dependencies
-        run: lune run install
+        run: pesde install
 
       - name: Setup Lune typedefs
         run: lune setup
