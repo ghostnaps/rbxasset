@@ -1,4 +1,4 @@
-local frktest = require("@pkg/frktest/src/frktest")
+local frktest = require("@pkg/frktest")
 local test = frktest.test
 local check = frktest.assert.check
 
