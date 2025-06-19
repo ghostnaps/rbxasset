@@ -14,7 +14,7 @@ includes = [
 
 [target]
 environment = "lune"
-lib = "init.luau"
+lib = "src/init.luau"
 
 [engines]
 lune = "^0.9.3"
