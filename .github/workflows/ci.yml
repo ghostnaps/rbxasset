@@ -46,6 +46,9 @@ jobs:
 
       - uses: CompeyDev/setup-rokit@v0.1.2
 
+      - name: Install tools
+        run: rokit install
+
       - name: Install dependencies
         run: lune run install
 
