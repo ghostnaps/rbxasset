@@ -29,7 +29,7 @@ jobs:
         run: pesde auth login --token ${{ secrets.PESDE_PUBLISH_TOKEN }}
 
       - name: Publishing dry-run
-        if: !github.event.release
+        if: github.event.release == null
         run: pesde publish --dry-run
 
       - name: Publish to Pesde registry
