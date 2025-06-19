@@ -52,5 +52,8 @@ jobs:
       - name: Install dependencies
         run: lune run install
 
+      - name: Setup Lune typedefs
+        run: lune setup
+
       - name: Analyze
         run: lune run analyze
