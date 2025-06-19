@@ -31,8 +31,9 @@ local function publishPlaceAsync(
 
 	if res.ok then
 		local body = serde.decode("json", res.body)
-		return body.versionNumber
+		return body.versionNumber :: number
 	end
+	return -1
 end
 
 return publishPlaceAsync
