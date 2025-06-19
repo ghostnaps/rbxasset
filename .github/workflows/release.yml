@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  pull_request:
+  release:
+    types: [published]
+  push:
+    branches:
+      - main
+
+jobs:
+  publish-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: Roblox/setup-foreman@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allow-external-github-orgs: true
+
+      - uses: lumin-org/setup-pesde@v0.4.1
+
+      - name: Install dependencies
+        run: pesde install
+
+      - name: Login to Pesde registry
+        run: pesde auth login --token ${{ secrest.PESDE_PUBLISH_TOKEN }}
+
+      - name: Publishing dry-run
+        if: !github.event.release
+        run: pesde publish --dry-run
+
+      - name: Publish to Pesde registry
+        if: github.event.release
+        run: pesde publish
