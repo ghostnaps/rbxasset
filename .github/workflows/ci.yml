@@ -44,11 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: Roblox/setup-foreman@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allow-external-github-orgs: true
-          version: 1.6.3
+      - uses: CompeyDev/setup-rokit@v0.1.2
 
       - name: Install dependencies
         run: lune run install
