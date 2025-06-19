@@ -42,3 +42,22 @@ jobs:
 
       - name: Lint
         run: lune run lint
+
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: CompeyDev/setup-rokit@v0.1.2
+
+      - name: Install tools
+        run: rokit install --no-trust-check
+
+      - name: Install dependencies
+        run: lune run install
+
+      - name: Setup Lune typedefs
+        run: lune setup
+
+      - name: Analyze
+        run: lune run analyze

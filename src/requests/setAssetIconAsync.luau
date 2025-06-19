@@ -64,7 +64,7 @@ local function setAssetIconAsync(projectPath: string, assetName: string, assetCo
 
 	local operation = waitForAssetOperationAsync(body.operationId, apiKey)
 
-	if operation.error then
+	if operation.metadata then
 		local problems = {}
 		for _, err in operation.metadata.errors do
 			table.insert(problems, err.error.message)

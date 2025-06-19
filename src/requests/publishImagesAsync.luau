@@ -48,7 +48,7 @@ local function publishImagesAsync(
 				apiKey
 			)
 
-			local assetId = operation.response.assetId
+			local assetId = if operation.response then operation.response.assetId else nil
 
 			if assetId then
 				table.insert(pendingImages, {
@@ -88,18 +88,20 @@ local function publishImagesAsync(
 				apiKey
 			)
 
-			local assetId = operation.response.assetId
+			if operation.response then
+				local assetId = operation.response.assetId
 
-			if assetId then
-				table.insert(pendingImages, {
-					path = thumbnailPath,
-					filename = thumbnailFilename,
-					assetId = assetId,
-				})
+				if assetId then
+					table.insert(pendingImages, {
+						path = thumbnailPath,
+						filename = thumbnailFilename,
+						assetId = assetId,
+					})
 
-				logging.debug(`image uploaded successfully`)
-			else
-				logging.warn(`failed to upload image at {thumbnailPath}`)
+					logging.debug(`image uploaded successfully`)
+				else
+					logging.warn(`failed to upload image at {thumbnailPath}`)
+				end
 			end
 		end
 	end

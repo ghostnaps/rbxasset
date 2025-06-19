@@ -133,46 +133,27 @@ types.validateLockfile = t.strictInterface({
 export type ErrorStatusResponse = {
 	code: string,
 	message: string,
+	details: { string }?,
 }
 
-type OperationPendingResponse = {
-	done: false,
+export type OperationResponse = {
+	done: boolean,
 	operationId: string,
 	path: string,
-}
 
-type ErrorResponse = {
-	code: string,
-	details: { string }?,
-	message: string,
-}
+	-- Success
+	response: { [string]: any }?,
 
-type OperationFailedResponse = {
-	done: true,
-	error: ErrorResponse,
+	-- Failure
+	error: ErrorStatusResponse?,
 	metadata: {
 		errors: {
 			{
-				error: ErrorResponse,
+				error: ErrorStatusResponse,
 				fieldMask: { [string]: any },
 			}
 		},
-	},
-	operationId: string,
-	path: string,
-}
-
-type OperationSucceededResponse = {
-	done: true,
-	operationId: string,
-	path: string,
-	response: { [string]: any },
-}
-
-export type OperationResponse =
-	OperationSucceededResponse
-	| OperationFailedResponse
-	| OperationPendingResponse
-	| ErrorStatusResponse
+	}?,
+} & ErrorStatusResponse
 
 return types
