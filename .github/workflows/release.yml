@@ -26,7 +26,7 @@ jobs:
         run: pesde install
 
       - name: Login to Pesde registry
-        run: pesde auth login --token ${{ secrest.PESDE_PUBLISH_TOKEN }}
+        run: pesde auth login --token ${{ secrets.PESDE_PUBLISH_TOKEN }}
 
       - name: Publishing dry-run
         if: !github.event.release
