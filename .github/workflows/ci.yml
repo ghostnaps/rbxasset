@@ -53,4 +53,4 @@ jobs:
         run: lune run install
 
       - name: Analyze
-        run: lune run analyze
+        run: luau-lsp analyze --ignore=**/pkg/** .lune src examples
