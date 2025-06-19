@@ -32,6 +32,13 @@ jobs:
         if: github.event.release == null
         run: pesde publish --dry-run
 
+      # The dry-run command returns an exit code of 0 even on failures so this
+      # step will manually fail the job if the dry-run failed to output the
+      # package archive
+      - name: Verify dry-run artifact
+        if: github.event.release == null
+        run: find package.tar.gz
+
       - name: Publish to Pesde registry
         if: github.event.release
         run: pesde publish
