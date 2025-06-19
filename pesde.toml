@@ -4,8 +4,17 @@ authors = ["Marin Minnerly"]
 repository = "https://github.com/ghostnaps/rbxasset"
 license = "MIT"
 
+includes = [
+  ".luaurc",
+  "pesde.toml",
+  "src/**/*.luau",
+  "LICENSE",
+  "README.md",
+]
+
 [target]
 environment = "lune"
+lib = "init.luau"
 
 [engines]
 lune = "^0.9.3"
