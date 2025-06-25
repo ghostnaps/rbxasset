@@ -43,7 +43,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  publish-package:
+  publish-to-pesde-registry:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
