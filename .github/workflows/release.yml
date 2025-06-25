@@ -9,6 +9,29 @@ on:
       - main
 
 jobs:
+  build-standalone-zip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: Roblox/setup-foreman@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allow-external-github-orgs: true
+
+      - uses: lumin-org/setup-pesde@v0.4.1
+
+      - name: Install dependencies
+        run: pesde install
+
+      - name: Build
+        run: lune run build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: build/rbxasset.zip
+
   publish-package:
     runs-on: ubuntu-latest
     timeout-minutes: 10
