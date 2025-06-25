@@ -11,7 +11,7 @@ $ git clone https://github.com/ghostnaps/rbxasset.git
 Then define a Luau script to use it:
 
 ```luau
-local rbxasset = require("./path/to/rbxasset/src")
+local rbxasset = require("./path/to/rbxasset")
 ```
 
 # Usage

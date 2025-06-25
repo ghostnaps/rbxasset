@@ -9,7 +9,41 @@ on:
       - main
 
 jobs:
-  publish-package:
+  build-standalone-zip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      BUILD_ARTIFACT_PATH: build/rbxasset.zip
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: Roblox/setup-foreman@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allow-external-github-orgs: true
+
+      - uses: lumin-org/setup-pesde@v0.4.1
+
+      - name: Install dependencies
+        run: pesde install
+
+      - name: Build
+        run: lune run build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: ${{ env.BUILD_ARTIFACT_PATH }}
+          name: rbxasset
+
+      # - uses: Roblox-ActionsCache/softprops-action-gh-release@v1
+      - uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          files: ${{ env.BUILD_ARTIFACT_PATH }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-to-pesde-registry:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
