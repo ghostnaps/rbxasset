@@ -33,7 +33,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           path: ${{ env.BUILD_ARTIFACT_PATH }}
-          name: rbxasset.zip
+          name: rbxasset
 
       # - uses: Roblox-ActionsCache/softprops-action-gh-release@v1
       - uses: softprops/action-gh-release@v1
