@@ -1,5 +1,9 @@
 # rbxasset
 
+> [!WARNING]
+> This repository has moved to the Roblox org, find it here:
+> https://github.com/Roblox/rbxasset
+
 # Installation
 
 Requires [Lune](https://github.com/lune-org/lune) 0.9.3+
