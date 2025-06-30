@@ -1,7 +1,7 @@
 # rbxasset
 
 > [!WARNING]
-> This repository has moved to the Roblox org, find it here:
+> This repository has moved to the Roblox org. You can find it here:
 > https://github.com/Roblox/rbxasset
 
 # Installation
